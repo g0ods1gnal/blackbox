@@ -7,6 +7,9 @@
   roles:
     - { role: base, tags: ['base'] }
     - { role: windowmanager, tags: ['windowmanager'] }
+    - { role: virtualization, tags: ['virtualization'] }
+    - { role: docker, tags: ['docker'] }
+    - { role: security-tools, tags: ['security-tools'] }
 
   tasks:
     - name: Final system configuration

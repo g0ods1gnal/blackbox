@@ -1,0 +1,46 @@
+---
+
+- name: Install security tools from official repos
+  pacman:
+    name: "{{ security_tools }}"
+    state: present
+
+- name: Install Python security packages
+  pip:
+    name:
+      - impacket
+      - pwntools
+      - requests
+      - scapy
+      - theHarvester
+      - prowler
+      - scoutsuite
+    state: present
+    extra_args: --user --break-system-packages
+  become: yes
+  become_user: "{{ main_user }}"
+
+- name: Install AUR packages
+  command: paru -S --noconfirm {{ item }}
+  loop: "{{ aur_packages }}"
+  become: yes
+  become_user: "{{ main_user }}"
+  ignore_errors: yes
+
+- name: Create homelab directory structure
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0755'
+  loop: "{{ directories }}"
+
+- name: Install freshclam for ClamAV
+  pacman:
+    name: clamav-freshclam
+    state: present
+
+- name: Update ClamAV signatures
+  command: freshclam
+  ignore_errors: yes

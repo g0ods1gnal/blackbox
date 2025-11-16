@@ -18,6 +18,32 @@ ssh:
     port: 22
     enable_sshd: true
 
+# Security Configuration
+# ======================
+enable_ufw: true
+enable_apparmor: true
+enable_auditd: true
+mac_randomization: true
+dns_encryption: true
+
+# Directory Structure
+# ===================
+homelab_dir: "{{ main_user_home }}/homelab"
+directories:
+  - "{{ homelab_dir }}/scripts"
+  - "{{ homelab_dir }}/configs"
+  - "{{ homelab_dir }}/docker-tools"
+  - "{{ homelab_dir }}/cheatsheets"
+  - "{{ homelab_dir }}/vpn"
+  - "{{ main_user_home }}/HTB/Active"
+  - "{{ main_user_home }}/HTB/Retired"
+  - "{{ main_user_home }}/THM/Rooms"
+  - "{{ main_user_home }}/THM/Paths"
+  - "{{ main_user_home }}/Documents/Vault"
+  - "{{ main_user_home }}/Pictures/Screenshots"
+  - "{{ main_user_home }}/Pictures/Wallpapers"
+
+
 # Package Lists
 # =============
 base_packages:
@@ -27,10 +53,11 @@ base_packages:
   - zsh
   - htop
   - curl
-  - iptables
   - ulogd
+  - iptables
   - tmux
   - rsync
+  - iptables
   - coreutils
   - dateutils
   - ufw
@@ -66,3 +93,37 @@ wm_packages:
   - ttf-dejavu
   - noto-fonts
   - noto-fonts-emoji
+
+virtualization_packages:
+  - qemu-full
+  - libvirt
+  - virt-manager
+  - virt-viewer
+  - dnsmasq
+  - bridge-utils
+  - openbsd-netcat
+  - dmidecode
+
+security_tools:
+  - nmap
+  - masscan
+  - rustscan
+  - wireshark-qt
+  - tcpdump
+  - john
+  - hashcat
+  - hydra
+  - gobuster
+  - nikto
+  - binwalk
+  - ghidra
+  - radare2
+  - clamav
+
+aur_packages:
+  - burpsuite
+  - librewolf-bin
+  - tor-browser
+  - obsidian
+  - veracrypt
+  - mullvad-vpn-bin
