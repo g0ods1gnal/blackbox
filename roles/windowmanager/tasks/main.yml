@@ -1,0 +1,6 @@
+---
+
+- name: Install Sway and desktop packages
+  pacman:
+    name: "{{ wm_packages }}"
+    state: present

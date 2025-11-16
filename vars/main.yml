@@ -1,0 +1,68 @@
+####################################
+# Blackbox Configuration Variables #
+####################################
+
+# User Configuration
+# ==================
+main_user: goodsignal
+main_user_home: /home/goodsignal
+
+# System Configuration
+# ====================
+hostname: blackbox
+timezone: Europe/Lisbon
+
+# Connectivity configuration
+# ==========================
+ssh:
+    port: 22
+    enable_sshd: true
+
+# Package Lists
+# =============
+base_packages:
+  - base
+  - base-devel
+  - openssh
+  - zsh
+  - htop
+  - curl
+  - iptables
+  - ulogd
+  - tmux
+  - rsync
+  - coreutils
+  - dateutils
+  - ufw
+  - apparmor
+  - audit
+  - tor
+  - torsocks
+  - ethtool
+  - wpa_supplicant
+  - nmap
+  - networkmanager
+  - network-manager-applet
+  - networkmanager-openconnect
+  - networkmanager-openvpn
+
+wm_packages:
+  - sway
+  - swaylock
+  - swayidle
+  - swaybg
+  - waybar
+  - alacritty
+  - wofi
+  - mako
+  - grim
+  - slurp
+  - wl-clipboard
+  - brightnessctl
+  - playerctl
+  - pamixer
+  - pavucontrol
+  - ttf-font-awesome
+  - ttf-dejavu
+  - noto-fonts
+  - noto-fonts-emoji

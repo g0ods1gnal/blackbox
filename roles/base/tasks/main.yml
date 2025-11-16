@@ -1,0 +1,131 @@
+---
+
+- name: Update pacman package cache
+  pacman:
+    update_cache: true
+
+- name: Perform full system upgrade
+  pacman:
+    update_cache: true
+    upgrade: true
+
+- name: Install base security packages
+  pacman:
+    name: "{{ base_packages }}"
+    state: present
+    update_cache: yes
+
+- name: Install microcode updates for intel
+  pacman:
+    name: intel-ucode
+    state: present
+
+- name: Configure kernel parameters for hardening
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    reload: yes
+    sysctl_file: /etc/sysctl.d/99-security-hardening.conf
+  loop:
+    - { name: 'net.ipv4.ip_forward', value: '1' }
+    - { name: 'net.ipv6.conf.all.disable_ipv6', value: '1' }
+    - { name: 'net.ipv4.tcp_syncookies', value: '1' }
+    - { name: 'net.ipv4.conf.all.accept_redirects', value: '0' }
+    - { name: 'net.ipv4.conf.all.send_redirects', value: '0' }
+    - { name: 'net.ipv4.conf.all.accept_source_route', value: '0' }
+    - { name: 'net.ipv4.conf.all.rp_filter', value: '1' }
+    - { name: 'kernel.dmesg_restrict', value: '1' }
+    - { name: 'kernel.kptr_restrict', value: '2' }
+    - { name: 'kernel.yama.ptrace_scope', value: '3' }
+    - { name: 'kernel.kexec_load_disabled', value: '1' }
+    - { name: 'kernel.unprivileged_userns_clone', value: '0' }
+    - { name: 'kernel.unprivileged_bpf_disabled', value: '1' }
+    - { name: 'kernel.perf_event_paranoid', value: '3' }
+    - { name: 'vm.swappiness', value: '1' }
+
+- name: Configure MAC address randomization
+  copy:
+    dest: /etc/NetworkManager/conf.d/00-mac-randomization.conf
+    content: |
+      [device]
+      wifi.scan-rand-mac-address=yes
+      
+      [connection]
+      wifi.cloned-mac-address=random
+      ethernet.cloned-mac-address=random
+  notify: restart networkmanager
+
+- name: Enable AppArmor
+  systemd:
+    name: apparmor
+    enabled: yes
+    state: started
+
+- name: Find systemd-boot entry files
+  find:
+    paths: /boot/loader/entries
+    patterns: "*linux.conf"
+    excludes: "*fallback.conf"
+  register: boot_entries
+
+- name: Add AppArmor LSM to boot parameters (if not present)
+  shell: |
+    if ! grep -q "lsm=" "{{ item.path }}"; then
+      sed -i.bak 's|^options \(.*\)$|options \1 lsm=landlock,lockdown,yama,integrity,apparmor,bpf|' "{{ item.path }}"
+      echo "CHANGED"
+    else
+      echo "ALREADY_SET"
+    fi
+  loop: "{{ boot_entries.files }}"
+  register: boot_update
+  changed_when: "'CHANGED' in boot_update.stdout"
+  when: boot_entries.files | length > 0
+
+- name: Configure secure DNS
+  copy:
+    dest: /etc/NetworkManager/conf.d/dns-servers.conf
+    content: |
+      [main]
+      dns=default
+      
+      [connection]
+      connection.dns=1.1.1.1,1.0.0.1,8.8.8.8,8.8.4.4
+      connection.dns-priority=100
+    mode: '0644'
+  notify: restart networkmanager
+
+- name: Ensure resolv.conf is not immutable (for NetworkManager)
+  command: chattr -i /etc/resolv.conf
+  ignore_errors: yes
+  changed_when: false
+
+- name: Configure ipv4 iptables
+  template: 
+    src: iptables.rules.j2 
+    dest: /etc/iptables/iptables.rules
+  notify:
+    - start iptables
+
+- name: Configure ipv6 iptables
+  template: 
+    src: ip6tables.rules.j2 
+    dest: /etc/iptables/ip6tables.rules
+  notify:
+    - start ip6tables
+
+- name: Disable unnecessary services
+  systemd:
+    name: "{{ item }}"
+    enabled: no
+    state: stopped
+  loop:
+    - avahi-daemon.service
+  ignore_errors: yes
+
+- name: Enable audit daemon
+  systemd:
+    name: auditd
+    enabled: yes
+    state: started
+
