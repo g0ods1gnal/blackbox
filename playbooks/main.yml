@@ -5,14 +5,8 @@
     - ../vars/main.yml
   
   roles:
-    - base
-    - windowmanager
-    #- virtualization
-    #- docker
-    #- security-tools
-    #- vpn-setup
-    #- vm-configs
-    #- obsidian-vault
+    - { role: base, tags: ['base'] }
+    - { role: windowmanager, tags: ['windowmanager'] }
 
   tasks:
     - name: Final system configuration

@@ -1,0 +1,56 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 30,
+    "modules-left": ["sway/workspaces", "sway/mode"],
+    "modules-center": ["clock"],
+    "modules-right": ["network", "cpu", "memory", "pulseaudio", "battery"],
+    
+    "sway/workspaces": {
+        "disable-scroll": true,
+        "all-outputs": false,
+        "format": "{name}"
+    },
+    
+    "clock": {
+        "format": "{:%Y-%m-%d %H:%M}",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+    },
+    
+    "network": {
+        "format-wifi": " {signalStrength}%",
+        "format-ethernet": "",
+        "format-disconnected": "⚠",
+        "tooltip-format": "{ifname}: {ipaddr}/{cidr}",
+        "on-click": "alacritty -e nmtui"
+    },
+    
+    "cpu": {
+        "format": " {usage}%",
+        "tooltip": false
+    },
+    
+    "memory": {
+        "format": " {}%"
+    },
+    
+    "pulseaudio": {
+        "format": "{icon} {volume}%",
+        "format-bluetooth": "{icon} {volume}%",
+        "format-muted": "",
+        "format-icons": {
+            "headphone": "",
+            "default": ["", "", ""]
+        },
+        "on-click": "pavucontrol"
+    },
+    
+    "battery": {
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{icon} {capacity}%",
+        "format-icons": ["", "", "", "", ""]
+    }
+}

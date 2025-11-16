@@ -4,3 +4,64 @@
   pacman:
     name: "{{ wm_packages }}"
     state: present
+
+- name: Create Sway config directory
+  file:
+    path: "{{ main_user_home }}/.config/sway"
+    state: directory
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0755'
+
+- name: Copy Sway configuration
+  template:
+    src: sway-config.j2
+    dest: "{{ main_user_home }}/.config/sway/config"
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0644'
+
+- name: Create Waybar config directory
+  file:
+    path: "{{ main_user_home }}/.config/waybar"
+    state: directory
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0755'
+
+- name: Copy Waybar configuration
+  copy:
+    src: waybar-config.json
+    dest: "{{ main_user_home }}/.config/waybar/config"
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0644'
+
+- name: Create Alacritty config directory
+  file:
+    path: "{{ main_user_home }}/.config/alacritty"
+    state: directory
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0755'
+
+- name: Copy Alacritty configuration
+  copy:
+    src: alacritty.yml
+    dest: "{{ main_user_home }}/.config/alacritty/alacritty.yml"
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0644'
+
+- name: Install polkit-gnome for authentication
+  pacman:
+    name: polkit-gnome
+    state: present
+
+- name: Create systemd user directory
+  file:
+    path: "{{ main_user_home }}/.config/systemd/user"
+    state: directory
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0755'
