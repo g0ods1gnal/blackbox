@@ -16,7 +16,25 @@ set $term alacritty
 set $menu wofi --show drun --allow-images --insensitive
 
 # Output
-output * bg {{ main_user_home }}/Pictures/wallpapers/default.png fill
+
+# Laptop screen (2560x1600)
+output eDP-1 {
+    mode 2560x1600@60Hz
+    pos 0 0
+    scale 1
+}
+
+# LG Ultrawide on HDMI-A-2 (3440x1440 native resolution)
+output HDMI-A-2 enable
+output HDMI-A-2 {
+    mode 3440x1440@59.973Hz
+    pos 2560 0
+    scale 1
+    adaptive_sync off
+    max_render_time 6
+}
+
+output * bg {{ main_user_home }}/Pictures/Wallpapers/default.jpg fill
 
 # Idle configuration
 exec swayidle -w \
@@ -43,7 +61,7 @@ bindsym $mod+Return exec $term
 bindsym $mod+Shift+q kill
 bindsym $mod+d exec $menu
 bindsym $mod+Shift+c reload
-bindsym $mod+Shift+l exec swaylock -f -c 000000
+bindsym $mod+Shift+x exec swaylock -f -c 000000
 
 # Screenshots
 bindsym Print exec grim -g "$(slurp)" {{ main_user_home }}/Pictures/screenshots/$(date +%Y%m%d-%H%M%S).png
@@ -102,7 +120,7 @@ default_border pixel 2
 # Autostart
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 exec mako
-exec waybar
+#exec waybar
 
 bar {
     swaybar_command waybar

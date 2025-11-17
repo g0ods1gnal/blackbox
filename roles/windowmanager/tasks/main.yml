@@ -37,6 +37,14 @@
     group: "{{ main_user }}"
     mode: '0644'
 
+- name: Copy Waybar css
+  copy:
+    src: style.css
+    dest: "{{ main_user_home }}/.config/waybar/style.css"
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0644'
+
 - name: Create Alacritty config directory
   file:
     path: "{{ main_user_home }}/.config/alacritty"
@@ -47,8 +55,8 @@
 
 - name: Copy Alacritty configuration
   copy:
-    src: alacritty.yml
-    dest: "{{ main_user_home }}/.config/alacritty/alacritty.yml"
+    src: alacritty.toml
+    dest: "{{ main_user_home }}/.config/alacritty/alacritty.toml"
     owner: "{{ main_user }}"
     group: "{{ main_user }}"
     mode: '0644'

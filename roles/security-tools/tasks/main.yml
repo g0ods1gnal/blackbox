@@ -20,13 +20,6 @@
   become: yes
   become_user: "{{ main_user }}"
 
-- name: Install AUR packages
-  command: paru -S --noconfirm {{ item }}
-  loop: "{{ aur_packages }}"
-  become: yes
-  become_user: "{{ main_user }}"
-  ignore_errors: yes
-
 - name: Create homelab directory structure
   file:
     path: "{{ item }}"
@@ -38,7 +31,7 @@
 
 - name: Install freshclam for ClamAV
   pacman:
-    name: clamav-freshclam
+    name: clamav
     state: present
 
 - name: Update ClamAV signatures

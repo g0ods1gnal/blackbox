@@ -1,48 +1,34 @@
 {
     "layer": "top",
     "position": "top",
-    "height": 30,
+    "height": 26,
+    "spacing": 2,
     "modules-left": ["sway/workspaces", "sway/mode"],
-    "modules-center": ["clock"],
-    "modules-right": ["network", "cpu", "memory", "pulseaudio", "battery"],
+    "modules-center": ["sway/window"],
+    "modules-right": ["cpu", "memory", "battery", "clock"],
     
     "sway/workspaces": {
         "disable-scroll": true,
-        "all-outputs": false,
+        "all-outputs": true,
         "format": "{name}"
     },
     
-    "clock": {
-        "format": "{:%Y-%m-%d %H:%M}",
-        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+    "sway/mode": {
+        "format": "{}"
     },
     
-    "network": {
-        "format-wifi": " {signalStrength}%",
-        "format-ethernet": "",
-        "format-disconnected": "⚠",
-        "tooltip-format": "{ifname}: {ipaddr}/{cidr}",
-        "on-click": "alacritty -e nmtui"
+    "sway/window": {
+        "format": "{}",
+        "max-length": 60
     },
     
     "cpu": {
-        "format": " {usage}%",
+        "format": "CPU {usage}%",
         "tooltip": false
     },
     
     "memory": {
-        "format": " {}%"
-    },
-    
-    "pulseaudio": {
-        "format": "{icon} {volume}%",
-        "format-bluetooth": "{icon} {volume}%",
-        "format-muted": "",
-        "format-icons": {
-            "headphone": "",
-            "default": ["", "", ""]
-        },
-        "on-click": "pavucontrol"
+        "format": "RAM {}%"
     },
     
     "battery": {
@@ -50,7 +36,13 @@
             "warning": 30,
             "critical": 15
         },
-        "format": "{icon} {capacity}%",
-        "format-icons": ["", "", "", "", ""]
+        "format": "BAT {capacity}%",
+        "format-charging": "CHG {capacity}%"
+    },
+    
+    "clock": {
+        "format": "{:%H:%M}",
+        "format-alt": "{:%Y-%m-%d}",
+        "tooltip-format": "<tt>{calendar}</tt>"
     }
 }

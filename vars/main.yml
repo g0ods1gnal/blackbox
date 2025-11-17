@@ -50,6 +50,7 @@ base_packages:
   - base
   - base-devel
   - openssh
+  - dosfstools
   - zsh
   - htop
   - curl
@@ -63,6 +64,8 @@ base_packages:
   - ufw
   - apparmor
   - audit
+  - python
+  - python-pip
   - tor
   - torsocks
   - ethtool
@@ -120,10 +123,3 @@ security_tools:
   - radare2
   - clamav
 
-aur_packages:
-  - burpsuite
-  - librewolf-bin
-  - tor-browser
-  - obsidian
-  - veracrypt
-  - mullvad-vpn-bin
