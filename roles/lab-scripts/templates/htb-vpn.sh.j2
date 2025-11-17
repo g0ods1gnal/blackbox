@@ -1,0 +1,66 @@
+#!/bin/bash
+# HackTheBox VPN Manager
+
+VPN_CONFIG="{{ homelab_dir }}/vpn/htb.ovpn"
+LOG_FILE="/tmp/htb-vpn.log"
+
+case "$1" in
+    start)
+        if [ ! -f "$VPN_CONFIG" ]; then
+            echo "❌ HTB VPN config not found: $VPN_CONFIG"
+            echo ""
+            echo "Download from: https://www.hackthebox.com/home/htb/access"
+            echo "Save to: $VPN_CONFIG"
+            exit 1
+        fi
+        
+        echo "🔒 Starting HackTheBox VPN..."
+        sudo openvpn --config "$VPN_CONFIG" --daemon --log "$LOG_FILE"
+        
+        sleep 3
+        
+        if ip addr show tun0 &> /dev/null; then
+            echo "✅ VPN connected!"
+            echo ""
+            echo "VPN IP: $(ip addr show tun0 | grep "inet " | awk '{print $2}')"
+        else
+            echo "❌ VPN connection failed. Check log: $LOG_FILE"
+            exit 1
+        fi
+        ;;
+        
+    stop)
+        echo "🛑 Stopping VPN..."
+        sudo killall openvpn
+        echo "✅ VPN disconnected"
+        ;;
+        
+    status)
+        if pgrep openvpn > /dev/null; then
+            echo "✅ HTB VPN is running"
+            if ip addr show tun0 &> /dev/null; then
+                echo "VPN IP: $(ip addr show tun0 | grep "inet " | awk '{print $2}')"
+            fi
+        else
+            echo "❌ HTB VPN is not running"
+        fi
+        ;;
+        
+    restart)
+        $0 stop
+        sleep 2
+        $0 start
+        ;;
+        
+    *)
+        echo "HackTheBox VPN Manager"
+        echo ""
+        echo "Usage: $0 {start|stop|status|restart}"
+        echo ""
+        echo "Examples:"
+        echo "  $0 start    # Connect to HTB"
+        echo "  $0 status   # Check connection"
+        echo "  $0 stop     # Disconnect"
+        exit 1
+        ;;
+esac

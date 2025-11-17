@@ -1,0 +1,63 @@
+#!/bin/bash
+# Lab Environment Manager
+
+case "$1" in
+    start)
+        echo "🚀 Starting lab environment..."
+        
+        # Start networks
+        for net in isolated pentest defensive cloudlab; do
+            sudo virsh net-start $net 2>/dev/null
+        done
+        
+        # Start Docker
+        sudo systemctl start docker
+        
+        echo "✅ Lab environment started"
+        echo ""
+        echo "Available commands:"
+        echo "  vms           - List VMs"
+        echo "  dlab start    - Start Docker lab"
+        echo "  htb start     - Connect to HTB"
+        echo "  lab-check     - Security check"
+        ;;
+        
+    stop)
+        echo "🛑 Stopping lab environment..."
+        
+        # Stop all VMs
+        for vm in $(sudo virsh list --name); do
+            echo "Stopping $vm..."
+            sudo virsh shutdown $vm
+        done
+        
+        # Stop Docker containers
+        docker stop $(docker ps -q) 2>/dev/null
+        
+        echo "✅ Lab environment stopped"
+        ;;
+        
+    status)
+        echo "📊 Lab Status"
+        echo ""
+        echo "Virtual Networks:"
+        sudo virsh net-list --all
+        echo ""
+        echo "Virtual Machines:"
+        sudo virsh list --all
+        echo ""
+        echo "Docker Containers:"
+        docker ps -a
+        ;;
+        
+    *)
+        echo "Lab Environment Manager"
+        echo ""
+        echo "Usage: $0 {start|stop|status}"
+        echo ""
+        echo "Commands:"
+        echo "  start   - Start lab environment"
+        echo "  stop    - Stop all VMs and containers"
+        echo "  status  - Show current status"
+        ;;
+esac

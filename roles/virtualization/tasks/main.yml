@@ -1,0 +1,79 @@
+---
+- name: Install virtualization packages
+  pacman:
+    name: "{{ virtualization_packages }}"
+    state: present
+
+- name: Add user to libvirt and kvm groups
+  user:
+    name: "{{ main_user }}"
+    groups: libvirt,kvm
+    append: yes
+
+- name: Configure libvirt to run as user
+  lineinfile:
+    path: /etc/libvirt/qemu.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    backup: yes
+  loop:
+    - { regexp: '^#?user = .*', line: 'user = "{{ main_user }}"' }
+    - { regexp: '^#?group = .*', line: 'group = "libvirt"' }
+
+- name: Enable and start libvirt services
+  systemd:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+  loop:
+    - libvirtd
+    - virtlogd
+
+- name: Create network configuration directory
+  file:
+    path: /etc/libvirt/qemu/networks
+    state: directory
+    mode: '0755'
+
+- name: Create virtual network XML files
+  template:
+    src: network.xml.j2
+    dest: /etc/libvirt/qemu/networks/{{ item.name }}.xml
+    mode: '0644'
+  loop: "{{ vm_networks }}"
+
+- name: Define virtual networks
+  command: virsh net-define /etc/libvirt/qemu/networks/{{ item.name }}.xml
+  loop: "{{ vm_networks }}"
+  register: net_define
+  failed_when:
+    - net_define.rc != 0
+    - "'already exists' not in net_define.stderr"
+  changed_when: "'already exists' not in net_define.stderr"
+
+- name: Autostart virtual networks
+  command: virsh net-autostart {{ item.name }}
+  loop: "{{ vm_networks }}"
+  ignore_errors: yes
+
+- name: Start virtual networks
+  command: virsh net-start {{ item.name }}
+  loop: "{{ vm_networks }}"
+  register: net_start
+  failed_when:
+    - net_start.rc != 0
+    - "'already active' not in net_start.stderr"
+  changed_when: "'already active' not in net_start.stderr"
+
+- name: UFW - Allow virtual network bridges
+  community.general.ufw:
+    rule: allow
+    interface: "{{ item.bridge }}"
+    direction: in
+  loop: "{{ vm_networks }}"
+
+- name: UFW - Block isolated network from internet
+  community.general.ufw:
+    rule: deny
+    direction: out
+    interface: virbr-isolated

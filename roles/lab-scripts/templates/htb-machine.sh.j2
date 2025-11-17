@@ -1,0 +1,57 @@
+#!/bin/bash
+# HTB Machine Starter
+
+if [ -z "$1" ] || [ -z "$2" ]; then
+    echo "Usage: $0 <machine-name> <ip-address>"
+    echo ""
+    echo "Example: $0 Lame 10.10.10.3"
+    exit 1
+fi
+
+MACHINE=$1
+IP=$2
+MACHINE_DIR="{{ main_user_home }}/HTB/Active/${MACHINE}"
+
+echo "🎯 Setting up HTB machine: $MACHINE"
+echo ""
+
+# Create directory structure
+mkdir -p "$MACHINE_DIR"/{scans,exploit,loot,notes}
+
+# Create machine note from template
+if [ -f "{{ main_user_home }}/HTB/machine-template.md" ]; then
+    sed "s/\[MACHINE NAME\]/$MACHINE/" "{{ main_user_home }}/HTB/machine-template.md" > "$MACHINE_DIR/$MACHINE.md"
+    sed -i "s/10\.10\.10\.X/$IP/" "$MACHINE_DIR/$MACHINE.md"
+    sed -i "s/{{ ansible_date_time.date }}/$(date +%Y-%m-%d)/" "$MACHINE_DIR/$MACHINE.md"
+fi
+
+# Add to /etc/hosts
+if ! grep -q "$MACHINE.htb" /etc/hosts; then
+    echo "$IP $MACHINE.htb" | sudo tee -a /etc/hosts
+    echo "✅ Added to /etc/hosts: $IP $MACHINE.htb"
+fi
+
+# Set TARGET environment variable
+export TARGET=$IP
+echo "export TARGET=$IP" >> ~/.zshrc.tmp
+source ~/.zshrc.tmp
+rm ~/.zshrc.tmp
+
+echo ""
+echo "✅ Machine setup complete!"
+echo ""
+echo "Directory: $MACHINE_DIR"
+echo "Notes:     $MACHINE_DIR/$MACHINE.md"
+echo "Target IP: $IP (saved as \$TARGET)"
+echo ""
+echo "Quick commands:"
+echo "  cd $MACHINE_DIR"
+echo "  qscan \$TARGET"
+echo "  nmap -sV -sC -oN scans/quick.nmap \$TARGET"
+echo ""
+
+# Start initial scan in background
+cd "$MACHINE_DIR/scans"
+echo "🔍 Starting initial nmap scan..."
+nmap -sV -sC -oN quick.nmap $IP > /dev/null 2>&1 &
+echo "   (Running in background, check scans/quick.nmap)"

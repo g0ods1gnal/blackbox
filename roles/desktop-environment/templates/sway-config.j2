@@ -1,4 +1,4 @@
-### Variables ###
+# Mod key
 set $mod Mod1
 set $left h
 set $down j
@@ -7,21 +7,17 @@ set $right l
 set $term alacritty
 set $menu wofi --show drun
 
-### Gruvbox Hard Dark Colors ###
-set $bg {{ gruvbox.bg_hard }}
-set $fg {{ gruvbox.fg }}
-set $red {{ gruvbox.red }}
-set $green {{ gruvbox.green }}
-set $yellow {{ gruvbox.yellow }}
-set $blue {{ gruvbox.blue }}
-set $purple {{ gruvbox.purple }}
-set $aqua {{ gruvbox.aqua }}
-set $gray {{ gruvbox.gray }}
-set $orange {{ gruvbox.orange }}
-set $bg_soft {{ gruvbox.bg_soft }}
-set $fg_dim {{ gruvbox.fg_dim }}
+### Colors - True Black ###
+set $black #000000
+set $almostblack #0d0d0d
+set $darkgray #1a1a1a
+set $gray #665c54
+set $lightgray #928374
+set $white #ebdbb2
+set $blue #458588
+set $red #cc241d
 
-### Output configuration ###
+### Output ###
 output * bg {{ main_user_home }}/Pictures/Wallpapers/wall.jpg fill
 
 # Laptop screen
@@ -31,24 +27,23 @@ output eDP-1 {
     scale 1
 }
 
-# External HDMI (LG Ultrawide)
+# External HDMI
 output HDMI-A-2 enable
 output HDMI-A-2 {
     mode 3440x1440@59.973Hz
     pos 2560 0
     scale 1
     adaptive_sync off
-    max_render_time 6
 }
 
-### Idle configuration ###
+### Idle ###
 exec swayidle -w \
-    timeout 300 'swaylock -f -c {{ gruvbox.bg_hard | replace("#", "") }}' \
+    timeout 300 'swaylock -f -c 000000' \
     timeout 600 'swaymsg "output * dpms off"' \
         resume 'swaymsg "output * dpms on"' \
-    before-sleep 'swaylock -f -c {{ gruvbox.bg_hard | replace("#", "") }}'
+    before-sleep 'swaylock -f -c 000000'
 
-### Input configuration ###
+### Input ###
 input type:keyboard {
     xkb_layout "pt"
     repeat_delay 250
@@ -66,11 +61,11 @@ bindsym $mod+Return exec $term
 bindsym $mod+Shift+q kill
 bindsym $mod+d exec $menu
 bindsym $mod+Shift+c reload
-bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit sway?' -B 'Yes' 'swaymsg exit'
+bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit?' -B 'Yes' 'swaymsg exit'
 
 # Screenshots
-bindsym Print exec grim -g "$(slurp)" {{ main_user_home }}/Pictures/screenshots/$(date +%Y%m%d-%H%M%S).png
-bindsym $mod+Print exec grim {{ main_user_home }}/Pictures/screenshots/full-$(date +%Y%m%d-%H%M%S).png
+bindsym Print exec grim -g "$(slurp)" ~/Pictures/Screenshots/$(date +%Y%m%d-%H%M%S).png
+bindsym $mod+Print exec grim ~/Pictures/Screenshots/full-$(date +%Y%m%d-%H%M%S).png
 
 # Volume
 bindsym XF86AudioRaiseVolume exec pamixer -i 5
@@ -81,7 +76,7 @@ bindsym XF86AudioMute exec pamixer -t
 bindsym XF86MonBrightnessUp exec brightnessctl set +5%
 bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
 
-# Moving around
+# Navigation
 bindsym $mod+$left focus left
 bindsym $mod+$down focus down
 bindsym $mod+$up focus up
@@ -103,11 +98,11 @@ bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 
 ### Workspaces ###
-set $ws1 "1:term"
-set $ws2 "2:web"
-set $ws3 "3:vms"
-set $ws4 "4:tools"
-set $ws5 "5:notes"
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
 
 workspace 1 output eDP-1
 workspace 2 output eDP-1
@@ -127,7 +122,6 @@ bindsym $mod+Shift+3 move container to workspace $ws3
 bindsym $mod+Shift+4 move container to workspace $ws4
 bindsym $mod+Shift+5 move container to workspace $ws5
 
-# Move workspace between monitors
 bindsym $mod+Shift+greater move workspace to output right
 bindsym $mod+Shift+less move workspace to output left
 
@@ -142,7 +136,6 @@ bindsym $mod+Shift+space floating toggle
 bindsym $mod+space focus mode_toggle
 bindsym $mod+a focus parent
 
-# Resizing
 mode "resize" {
     bindsym $left resize shrink width 10px
     bindsym $down resize grow height 10px
@@ -159,19 +152,18 @@ mode "resize" {
 }
 bindsym $mod+r mode "resize"
 
-### Appearance - Gruvbox Hard Dark ###
-gaps inner 10
-gaps outer 5
-default_border pixel 2
-default_floating_border pixel 2
+### Appearance - Minimal ###
+gaps inner 4
+gaps outer 0
+default_border pixel 1
+default_floating_border pixel 1
 hide_edge_borders smart
 
-# Window colors          border    bg        text      indicator child_border
-client.focused           $blue     $blue     $bg       $aqua     $blue
-client.focused_inactive  $gray     $bg_soft  $fg_dim   $gray     $gray
-client.unfocused         $bg_soft  $bg       $fg_dim   $bg_soft  $bg_soft
-client.urgent            $red      $red      $bg       $red      $red
-client.placeholder       $bg       $bg_soft  $fg_dim   $bg       $bg_soft
+# Window colors - subtle
+client.focused           $blue $black $white $blue $blue
+client.focused_inactive  $gray $black $lightgray $gray $gray
+client.unfocused         $black $black $gray $black $black
+client.urgent            $red $black $white $red $red
 
 ### Autostart ###
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1

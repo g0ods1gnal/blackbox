@@ -47,10 +47,10 @@
     policy: deny
     direction: incoming
 
-- name: Configure UFW firewall - default deny outgoing
+- name: Configure UFW firewall - default ALLOW outgoing
   community.general.ufw:
     state: enabled
-    policy: deny
+    policy: allow
     direction: outgoing
 
 - name: UFW - Allow loopback incoming
@@ -65,22 +65,23 @@
     interface: lo
     direction: out
 
-- name: UFW - Allow essential outbound
+- name: UFW - Allow SSH (optional, if you use it)
   community.general.ufw:
     rule: allow
-    direction: out
-    port: "{{ item.port }}"
-    proto: "{{ item.proto }}"
-  loop:
-    - { port: '53', proto: 'udp' }
-    - { port: '53', proto: 'tcp' }
-    - { port: '67', proto: 'udp' }
-    - { port: '68', proto: 'udp' }
-    - { port: '80', proto: 'tcp' }
-    - { port: '443', proto: 'tcp' }
-    - { port: '123', proto: 'udp' }
-    - { port: '1194', proto: 'udp' }
-    - { port: '51820', proto: 'udp' }
+    port: '22'
+    proto: tcp
+  when: false
+
+- name: Display UFW configuration note
+  debug:
+    msg: |
+      UFW configured with:
+      - DENY incoming (default)
+      - ALLOW outgoing (default)
+      
+      This is appropriate for a personal hacking laptop.
+      For stricter control, manually configure with:
+        sudo ufw deny out <port>
 
 - name: Enable AppArmor
   systemd:
@@ -131,8 +132,6 @@
     enabled: no
     state: stopped
   loop:
-    - bluetooth.service
-    - cups.service
     - avahi-daemon.service
   ignore_errors: yes
 
@@ -141,18 +140,3 @@
     name: auditd
     enabled: yes
     state: started
-
-- name: Add security aliases to bashrc
-  blockinfile:
-    path: "{{ main_user_home }}/.bashrc"
-    block: |
-      # Security aliases
-      alias ports='sudo netstat -tulanp'
-      alias listening='sudo lsof -i -P -n | grep LISTEN'
-      alias myip='curl -s ifconfig.me'
-      alias vpncheck='ip addr show tun0 2>/dev/null || echo "No VPN connected"'
-    marker: "# {mark} ANSIBLE MANAGED - SECURITY ALIASES"
-    owner: "{{ main_user }}"
-    group: "{{ main_user }}"
-    create: yes
-    mode: '0644'

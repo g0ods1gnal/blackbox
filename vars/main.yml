@@ -1,5 +1,4 @@
 ---
-# Personal Hacking Laptop Configuration Variables
 
 # User Configuration
 main_user: goodsignal
@@ -9,17 +8,21 @@ main_user_home: /home/goodsignal
 hostname: blackbox
 timezone: Europe/Lisbon
 
+# Zsh
+zsh_theme: powerlevel10k
+default_shell: /bin/zsh
+
 # Theme
 theme_name: gruvbox-hard-dark
 
 # Gruvbox Hard Dark Colors
 gruvbox:
-  bg_hard: "#1d2021"
-  bg: "#282828"
-  bg_soft: "#32302f"
+  bg_hard: "#000000"
+  bg: "#0d0d0d"
+  bg_soft: "#1a1a1a"
   fg: "#ebdbb2"
-  fg_dim: "#a89984"
-  gray: "#928374"
+  fg_dim: "#928374"
+  gray: "#665c54"
   red_dark: "#cc241d"
   red: "#fb4934"
   green_dark: "#98971a"
@@ -59,6 +62,7 @@ base_packages:
   - htop
   - btop
   - tmux
+  - tree
   - fzf
   - ripgrep
   - fd
@@ -83,6 +87,7 @@ sway_packages:
   - playerctl
   - pamixer
   - pavucontrol
+  - picom
   - polkit-gnome
   - xorg-xwayland
   - ttf-jetbrains-mono-nerd
@@ -95,3 +100,54 @@ security_packages:
   - ufw
   - apparmor
   - audit
+
+virtualization_packages:
+  - qemu-full
+  - libvirt
+  - virt-manager
+  - virt-viewer
+  - dnsmasq
+  - bridge-utils
+  - openbsd-netcat
+  - dmidecode
+
+security_tools:
+  - nmap
+  - masscan
+  - wireshark-qt
+  - tcpdump
+  - john
+  - hashcat
+  - hydra
+  - nikto
+  - binwalk
+  - radare2
+  - net-tools
+  - openvpn
+  - wireguard-tools
+  - tor
+  - torsocks
+
+vm_networks:
+  - name: isolated
+    bridge: virbr-isolated
+    mode: isolated
+    ip: 192.168.100.1
+    netmask: 255.255.255.0
+    dhcp_start: 192.168.100.10
+    dhcp_end: 192.168.100.254
+  - name: pentest
+    bridge: virbr-pentest
+    mode: route
+    ip: 10.10.10.1
+    netmask: 255.255.255.0
+    dhcp_start: 10.10.10.10
+    dhcp_end: 10.10.10.254
+  - name: defensive
+    bridge: virbr-defense
+    mode: nat
+    ip: 10.20.20.1
+    netmask: 255.255.255.0
+    dhcp_start: 10.20.20.10
+    dhcp_end: 10.20.20.254
+

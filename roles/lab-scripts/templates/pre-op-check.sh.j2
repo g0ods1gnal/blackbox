@@ -1,0 +1,71 @@
+#!/bin/bash
+# Pre-Operation Security Check
+
+echo "╔════════════════════════════════════════╗"
+echo "║   PRE-OPERATION SECURITY CHECK         ║"
+echo "╚════════════════════════════════════════╝"
+echo ""
+
+FAILED=0
+
+# Check disk encryption
+if cryptsetup status cryptlvm > /dev/null 2>&1; then
+    echo "✅ Disk encryption active"
+else
+    echo "❌ CRITICAL: Disk encryption not active!"
+    FAILED=1
+fi
+
+# Check firewall
+if sudo ufw status | grep -q "Status: active"; then
+    echo "✅ Firewall active"
+else
+    echo "❌ CRITICAL: Firewall not active!"
+    FAILED=1
+fi
+
+# Check VPN
+if ip addr show tun0 > /dev/null 2>&1; then
+    VPN_IP=$(ip addr show tun0 | grep "inet " | awk '{print $2}')
+    echo "✅ VPN connected: $VPN_IP"
+else
+    echo "⚠️  WARNING: VPN not connected"
+    echo "   Connect with: htb start (or thm start)"
+fi
+
+# Check AppArmor
+if systemctl is-active apparmor > /dev/null 2>&1; then
+    echo "✅ AppArmor active"
+else
+    echo "⚠️  WARNING: AppArmor not active"
+fi
+
+# Check MAC randomization
+if grep -q "random" /etc/NetworkManager/conf.d/00-mac-randomization.conf 2>/dev/null; then
+    echo "✅ MAC randomization enabled"
+else
+    echo "⚠️  WARNING: MAC randomization not configured"
+fi
+
+# Check Tor
+if systemctl is-active tor > /dev/null 2>&1; then
+    echo "✅ Tor service active"
+else
+    echo "⚠️  Tor service not active"
+fi
+
+echo ""
+
+if [ $FAILED -eq 1 ]; then
+    echo "❌ CRITICAL ISSUES DETECTED - DO NOT PROCEED"
+    exit 1
+else
+    echo "✅ All critical checks passed"
+    echo ""
+    read -p "Proceed with operation? (yes/no): " response
+    
+    if [ "$response" != "yes" ]; then
+        echo "Aborted"
+        exit 1
+    fi
+fi

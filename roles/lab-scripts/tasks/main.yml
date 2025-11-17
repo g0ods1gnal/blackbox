@@ -1,0 +1,49 @@
+---
+- name: Create VPN directory
+  file:
+    path: "{{ homelab_dir }}/vpn"
+    state: directory
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0700'
+
+- name: Create HTB VPN management script
+  template:
+    src: htb-vpn.sh.j2
+    dest: "{{ homelab_dir }}/scripts/htb-vpn.sh"
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0755'
+
+- name: Create THM VPN management script
+  template:
+    src: thm-vpn.sh.j2
+    dest: "{{ homelab_dir }}/scripts/thm-vpn.sh"
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0755'
+
+- name: Create pre-operation check script
+  template:
+    src: pre-op-check.sh.j2
+    dest: "{{ homelab_dir }}/scripts/pre-op-check.sh"
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0755'
+
+- name: Create lab management script
+  template:
+    src: lab-manage.sh.j2
+    dest: "{{ homelab_dir }}/scripts/lab-manage.sh"
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0755'
+
+- name: Create HTB machine starter script
+  template:
+    src: htb-machine.sh.j2
+    dest: "{{ homelab_dir }}/scripts/htb-machine.sh"
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0755'
+

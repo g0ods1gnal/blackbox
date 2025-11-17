@@ -1,0 +1,87 @@
+---
+- name: Install Docker
+  pacman:
+    name:
+      - docker
+      - docker-compose
+    state: present
+
+- name: Add user to docker group
+  user:
+    name: "{{ main_user }}"
+    groups: docker
+    append: yes
+
+- name: Enable and start Docker
+  systemd:
+    name: docker
+    enabled: yes
+    state: started
+
+- name: UFW - Allow Docker bridge incoming
+  community.general.ufw:
+    rule: allow
+    interface: docker0
+    direction: in
+
+- name: UFW - Allow Docker bridge outgoing
+  community.general.ufw:
+    rule: allow
+    interface: docker0
+    direction: out
+
+- name: Create Docker tools directory
+  file:
+    path: "{{ homelab_dir }}/docker-tools"
+    state: directory
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0755'
+
+- name: Create docker-compose for vulnerable apps
+  copy:
+    src: docker-compose.yml
+    dest: "{{ homelab_dir }}/docker-tools/docker-compose.yml"
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0644'
+
+- name: Create Docker helper script
+  copy:
+    dest: "{{ homelab_dir }}/scripts/docker-lab.sh"
+    content: |
+      #!/bin/bash
+      # Docker Lab Helper Script
+      
+      cd {{ homelab_dir }}/docker-tools
+      
+      case "$1" in
+          start)
+              echo "[*] Starting vulnerable apps..."
+              docker-compose up -d
+              echo "[+] Lab started!"
+              echo ""
+              echo "Available apps:"
+              echo "  - DVWA:       http://localhost:8080"
+              echo "  - Juice Shop: http://localhost:3000"
+              echo "  - WebGoat:    http://localhost:8081"
+              echo "  - WordPress:  http://localhost:8082"
+              ;;
+          stop)
+              echo "[*] Stopping lab..."
+              docker-compose down
+              ;;
+          status)
+              docker-compose ps
+              ;;
+          logs)
+              docker-compose logs -f
+              ;;
+          *)
+              echo "Usage: $0 {start|stop|status|logs}"
+              exit 1
+              ;;
+      esac
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0755'

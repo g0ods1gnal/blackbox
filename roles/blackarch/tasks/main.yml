@@ -1,0 +1,29 @@
+---
+- name: Download BlackArch setup script
+  get_url:
+    url: https://blackarch.org/strap.sh
+    dest: /tmp/blackarch-strap.sh
+    mode: '0755'
+
+- name: Verify BlackArch script checksum
+  stat:
+    path: /tmp/blackarch-strap.sh
+    checksum_algorithm: sha256
+  register: blackarch_script
+
+- name: Run BlackArch setup script
+  command: /tmp/blackarch-strap.sh
+  args:
+    creates: /etc/pacman.d/blackarch-mirrorlist
+  register: blackarch_setup
+
+- name: Update pacman database with BlackArch
+  pacman:
+    update_cache: yes
+  when: blackarch_setup.changed
+
+- name: Install BlackArch keyring
+  pacman:
+    name: blackarch-keyring
+    state: present
+
