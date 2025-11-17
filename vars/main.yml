@@ -1,82 +1,73 @@
-####################################
-# Blackbox Configuration Variables #
-####################################
+---
+# Personal Hacking Laptop Configuration Variables
 
 # User Configuration
-# ==================
 main_user: goodsignal
 main_user_home: /home/goodsignal
 
 # System Configuration
-# ====================
 hostname: blackbox
 timezone: Europe/Lisbon
 
-# Connectivity configuration
-# ==========================
-ssh:
-    port: 22
-    enable_sshd: true
+# Theme
+theme_name: gruvbox-hard-dark
 
-# Security Configuration
-# ======================
-enable_ufw: true
-enable_apparmor: true
-enable_auditd: true
-mac_randomization: true
-dns_encryption: true
+# Gruvbox Hard Dark Colors
+gruvbox:
+  bg_hard: "#1d2021"
+  bg: "#282828"
+  bg_soft: "#32302f"
+  fg: "#ebdbb2"
+  fg_dim: "#a89984"
+  gray: "#928374"
+  red_dark: "#cc241d"
+  red: "#fb4934"
+  green_dark: "#98971a"
+  green: "#b8bb26"
+  yellow_dark: "#d79921"
+  yellow: "#fabd2f"
+  blue_dark: "#458588"
+  blue: "#83a598"
+  purple_dark: "#b16286"
+  purple: "#d3869b"
+  aqua_dark: "#689d6a"
+  aqua: "#8ec07c"
+  orange_dark: "#d65d0e"
+  orange: "#fe8019"
 
 # Directory Structure
-# ===================
 homelab_dir: "{{ main_user_home }}/homelab"
 directories:
   - "{{ homelab_dir }}/scripts"
   - "{{ homelab_dir }}/configs"
-  - "{{ homelab_dir }}/docker-tools"
-  - "{{ homelab_dir }}/cheatsheets"
   - "{{ homelab_dir }}/vpn"
   - "{{ main_user_home }}/HTB/Active"
   - "{{ main_user_home }}/HTB/Retired"
   - "{{ main_user_home }}/THM/Rooms"
-  - "{{ main_user_home }}/THM/Paths"
   - "{{ main_user_home }}/Documents/Vault"
   - "{{ main_user_home }}/Pictures/Screenshots"
   - "{{ main_user_home }}/Pictures/Wallpapers"
 
-
 # Package Lists
-# =============
 base_packages:
-  - base
   - base-devel
-  - openssh
-  - dosfstools
-  - zsh
-  - htop
+  - git
+  - wget
   - curl
-  - ulogd
-  - iptables
+  - vim
+  - neovim
+  - htop
+  - btop
   - tmux
-  - rsync
-  - iptables
-  - coreutils
-  - dateutils
-  - ufw
-  - apparmor
-  - audit
-  - python
-  - python-pip
-  - tor
-  - torsocks
-  - ethtool
-  - wpa_supplicant
-  - nmap
-  - networkmanager
-  - network-manager-applet
-  - networkmanager-openconnect
-  - networkmanager-openvpn
+  - fzf
+  - ripgrep
+  - fd
+  - bat
+  - eza
+  - man-db
+  - man-pages
 
-wm_packages:
+sway_packages:
   - sway
   - swaylock
   - swayidle
@@ -92,34 +83,15 @@ wm_packages:
   - playerctl
   - pamixer
   - pavucontrol
+  - polkit-gnome
+  - xorg-xwayland
+  - ttf-jetbrains-mono-nerd
   - ttf-font-awesome
   - ttf-dejavu
   - noto-fonts
   - noto-fonts-emoji
 
-virtualization_packages:
-  - qemu-full
-  - libvirt
-  - virt-manager
-  - virt-viewer
-  - dnsmasq
-  - bridge-utils
-  - openbsd-netcat
-  - dmidecode
-
-security_tools:
-  - nmap
-  - masscan
-  - rustscan
-  - wireshark-qt
-  - tcpdump
-  - john
-  - hashcat
-  - hydra
-  - gobuster
-  - nikto
-  - binwalk
-  - ghidra
-  - radare2
-  - clamav
-
+security_packages:
+  - ufw
+  - apparmor
+  - audit

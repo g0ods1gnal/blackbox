@@ -1,0 +1,183 @@
+### Variables ###
+set $mod Mod1
+set $left h
+set $down j
+set $up k
+set $right l
+set $term alacritty
+set $menu wofi --show drun
+
+### Gruvbox Hard Dark Colors ###
+set $bg {{ gruvbox.bg_hard }}
+set $fg {{ gruvbox.fg }}
+set $red {{ gruvbox.red }}
+set $green {{ gruvbox.green }}
+set $yellow {{ gruvbox.yellow }}
+set $blue {{ gruvbox.blue }}
+set $purple {{ gruvbox.purple }}
+set $aqua {{ gruvbox.aqua }}
+set $gray {{ gruvbox.gray }}
+set $orange {{ gruvbox.orange }}
+set $bg_soft {{ gruvbox.bg_soft }}
+set $fg_dim {{ gruvbox.fg_dim }}
+
+### Output configuration ###
+output * bg {{ main_user_home }}/Pictures/Wallpapers/wall.jpg fill
+
+# Laptop screen
+output eDP-1 {
+    mode 2560x1600@60.001Hz
+    pos 0 0
+    scale 1
+}
+
+# External HDMI (LG Ultrawide)
+output HDMI-A-2 enable
+output HDMI-A-2 {
+    mode 3440x1440@59.973Hz
+    pos 2560 0
+    scale 1
+    adaptive_sync off
+    max_render_time 6
+}
+
+### Idle configuration ###
+exec swayidle -w \
+    timeout 300 'swaylock -f -c {{ gruvbox.bg_hard | replace("#", "") }}' \
+    timeout 600 'swaymsg "output * dpms off"' \
+        resume 'swaymsg "output * dpms on"' \
+    before-sleep 'swaylock -f -c {{ gruvbox.bg_hard | replace("#", "") }}'
+
+### Input configuration ###
+input type:keyboard {
+    xkb_layout "pt"
+    repeat_delay 250
+    repeat_rate 30
+}
+
+input type:touchpad {
+    tap enabled
+    natural_scroll enabled
+    dwt enabled
+}
+
+### Key bindings ###
+bindsym $mod+Return exec $term
+bindsym $mod+Shift+q kill
+bindsym $mod+d exec $menu
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit sway?' -B 'Yes' 'swaymsg exit'
+
+# Screenshots
+bindsym Print exec grim -g "$(slurp)" {{ main_user_home }}/Pictures/screenshots/$(date +%Y%m%d-%H%M%S).png
+bindsym $mod+Print exec grim {{ main_user_home }}/Pictures/screenshots/full-$(date +%Y%m%d-%H%M%S).png
+
+# Volume
+bindsym XF86AudioRaiseVolume exec pamixer -i 5
+bindsym XF86AudioLowerVolume exec pamixer -d 5
+bindsym XF86AudioMute exec pamixer -t
+
+# Brightness
+bindsym XF86MonBrightnessUp exec brightnessctl set +5%
+bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
+
+# Moving around
+bindsym $mod+$left focus left
+bindsym $mod+$down focus down
+bindsym $mod+$up focus up
+bindsym $mod+$right focus right
+
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+bindsym $mod+Shift+$left move left
+bindsym $mod+Shift+$down move down
+bindsym $mod+Shift+$up move up
+bindsym $mod+Shift+$right move right
+
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+### Workspaces ###
+set $ws1 "1:term"
+set $ws2 "2:web"
+set $ws3 "3:vms"
+set $ws4 "4:tools"
+set $ws5 "5:notes"
+
+workspace 1 output eDP-1
+workspace 2 output eDP-1
+workspace 3 output HDMI-A-2
+workspace 4 output HDMI-A-2
+workspace 5 output HDMI-A-2
+
+bindsym $mod+1 workspace $ws1
+bindsym $mod+2 workspace $ws2
+bindsym $mod+3 workspace $ws3
+bindsym $mod+4 workspace $ws4
+bindsym $mod+5 workspace $ws5
+
+bindsym $mod+Shift+1 move container to workspace $ws1
+bindsym $mod+Shift+2 move container to workspace $ws2
+bindsym $mod+Shift+3 move container to workspace $ws3
+bindsym $mod+Shift+4 move container to workspace $ws4
+bindsym $mod+Shift+5 move container to workspace $ws5
+
+# Move workspace between monitors
+bindsym $mod+Shift+greater move workspace to output right
+bindsym $mod+Shift+less move workspace to output left
+
+### Layout ###
+bindsym $mod+b splith
+bindsym $mod+v splitv
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+bindsym $mod+f fullscreen
+bindsym $mod+Shift+space floating toggle
+bindsym $mod+space focus mode_toggle
+bindsym $mod+a focus parent
+
+# Resizing
+mode "resize" {
+    bindsym $left resize shrink width 10px
+    bindsym $down resize grow height 10px
+    bindsym $up resize shrink height 10px
+    bindsym $right resize grow width 10px
+
+    bindsym Left resize shrink width 10px
+    bindsym Down resize grow height 10px
+    bindsym Up resize shrink height 10px
+    bindsym Right resize grow width 10px
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+r mode "resize"
+
+### Appearance - Gruvbox Hard Dark ###
+gaps inner 10
+gaps outer 5
+default_border pixel 2
+default_floating_border pixel 2
+hide_edge_borders smart
+
+# Window colors          border    bg        text      indicator child_border
+client.focused           $blue     $blue     $bg       $aqua     $blue
+client.focused_inactive  $gray     $bg_soft  $fg_dim   $gray     $gray
+client.unfocused         $bg_soft  $bg       $fg_dim   $bg_soft  $bg_soft
+client.urgent            $red      $red      $bg       $red      $red
+client.placeholder       $bg       $bg_soft  $fg_dim   $bg       $bg_soft
+
+### Autostart ###
+exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec mako
+exec waybar
+
+bar {
+    swaybar_command waybar
+}

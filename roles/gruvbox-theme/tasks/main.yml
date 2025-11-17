@@ -1,0 +1,27 @@
+---
+- name: Install fonts
+  pacman:
+    name:
+      - ttf-jetbrains-mono-nerd
+      - ttf-font-awesome
+      - ttf-dejavu
+      - noto-fonts
+      - noto-fonts-emoji
+    state: present
+
+- name: Create theme directory
+  file:
+    path: "{{ main_user_home }}/.config/theme"
+    state: directory
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0755'
+
+- name: Create Gruvbox color scheme file
+  template:
+    src: gruvbox-colors.sh.j2
+    dest: "{{ main_user_home }}/.config/theme/gruvbox-colors.sh"
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0644'
+

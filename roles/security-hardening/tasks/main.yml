@@ -1,23 +1,7 @@
 ---
-
-- name: Update pacman package cache
+- name: Install security packages
   pacman:
-    update_cache: true
-
-- name: Perform full system upgrade
-  pacman:
-    update_cache: true
-    upgrade: true
-
-- name: Install base security packages
-  pacman:
-    name: "{{ base_packages }}"
-    state: present
-    update_cache: yes
-
-- name: Install microcode updates for intel
-  pacman:
-    name: intel-ucode
+    name: "{{ security_packages }}"
     state: present
 
 - name: Configure kernel parameters for hardening
@@ -54,7 +38,49 @@
       [connection]
       wifi.cloned-mac-address=random
       ethernet.cloned-mac-address=random
+    mode: '0644'
   notify: restart networkmanager
+
+- name: Configure UFW firewall - default deny incoming
+  community.general.ufw:
+    state: enabled
+    policy: deny
+    direction: incoming
+
+- name: Configure UFW firewall - default deny outgoing
+  community.general.ufw:
+    state: enabled
+    policy: deny
+    direction: outgoing
+
+- name: UFW - Allow loopback incoming
+  community.general.ufw:
+    rule: allow
+    interface: lo
+    direction: in
+
+- name: UFW - Allow loopback outgoing
+  community.general.ufw:
+    rule: allow
+    interface: lo
+    direction: out
+
+- name: UFW - Allow essential outbound
+  community.general.ufw:
+    rule: allow
+    direction: out
+    port: "{{ item.port }}"
+    proto: "{{ item.proto }}"
+  loop:
+    - { port: '53', proto: 'udp' }
+    - { port: '53', proto: 'tcp' }
+    - { port: '67', proto: 'udp' }
+    - { port: '68', proto: 'udp' }
+    - { port: '80', proto: 'tcp' }
+    - { port: '443', proto: 'tcp' }
+    - { port: '123', proto: 'udp' }
+    - { port: '1194', proto: 'udp' }
+    - { port: '51820', proto: 'udp' }
 
 - name: Enable AppArmor
   systemd:
@@ -69,7 +95,7 @@
     excludes: "*fallback.conf"
   register: boot_entries
 
-- name: Add AppArmor LSM to boot parameters (if not present)
+- name: Add security parameters to boot (if not present)
   shell: |
     if ! grep -q "lsm=" "{{ item.path }}"; then
       sed -i.bak 's|^options \(.*\)$|options \1 lsm=landlock,lockdown,yama,integrity,apparmor,bpf|' "{{ item.path }}"
@@ -82,7 +108,7 @@
   changed_when: "'CHANGED' in boot_update.stdout"
   when: boot_entries.files | length > 0
 
-- name: Configure secure DNS
+- name: Configure secure DNS servers via NetworkManager
   copy:
     dest: /etc/NetworkManager/conf.d/dns-servers.conf
     content: |
@@ -90,29 +116,14 @@
       dns=default
       
       [connection]
-      connection.dns=1.1.1.1,1.0.0.1,8.8.8.8,8.8.4.4
-      connection.dns-priority=100
+      connection.dns=1.1.1.1,1.0.0.1,8.8.8.8
     mode: '0644'
   notify: restart networkmanager
 
-- name: Ensure resolv.conf is not immutable (for NetworkManager)
+- name: Ensure resolv.conf is not immutable
   command: chattr -i /etc/resolv.conf
   ignore_errors: yes
   changed_when: false
-
-- name: Configure ipv4 iptables
-  template: 
-    src: iptables.rules.j2 
-    dest: /etc/iptables/iptables.rules
-  notify:
-    - start iptables
-
-- name: Configure ipv6 iptables
-  template: 
-    src: ip6tables.rules.j2 
-    dest: /etc/iptables/ip6tables.rules
-  notify:
-    - start ip6tables
 
 - name: Disable unnecessary services
   systemd:
@@ -120,6 +131,8 @@
     enabled: no
     state: stopped
   loop:
+    - bluetooth.service
+    - cups.service
     - avahi-daemon.service
   ignore_errors: yes
 
@@ -129,3 +142,17 @@
     enabled: yes
     state: started
 
+- name: Add security aliases to bashrc
+  blockinfile:
+    path: "{{ main_user_home }}/.bashrc"
+    block: |
+      # Security aliases
+      alias ports='sudo netstat -tulanp'
+      alias listening='sudo lsof -i -P -n | grep LISTEN'
+      alias myip='curl -s ifconfig.me'
+      alias vpncheck='ip addr show tun0 2>/dev/null || echo "No VPN connected"'
+    marker: "# {mark} ANSIBLE MANAGED - SECURITY ALIASES"
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    create: yes
+    mode: '0644'

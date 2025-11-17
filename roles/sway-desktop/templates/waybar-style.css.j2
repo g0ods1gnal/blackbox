@@ -1,0 +1,128 @@
+/* Waybar - Gruvbox Hard Dark Theme */
+
+* {
+    border: none;
+    border-radius: 0;
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 13px;
+    min-height: 0;
+}
+
+window#waybar {
+    background-color: {{ gruvbox.bg_hard }};
+    color: {{ gruvbox.fg }};
+    transition-property: background-color;
+    transition-duration: .5s;
+}
+
+window#waybar.hidden {
+    opacity: 0.2;
+}
+
+#workspaces button {
+    padding: 0 8px;
+    background-color: transparent;
+    color: {{ gruvbox.fg_dim }};
+    border-bottom: 3px solid transparent;
+}
+
+#workspaces button:hover {
+    background: {{ gruvbox.bg_soft }};
+    color: {{ gruvbox.fg }};
+}
+
+#workspaces button.focused {
+    background-color: {{ gruvbox.bg_soft }};
+    color: {{ gruvbox.blue }};
+    border-bottom: 3px solid {{ gruvbox.blue }};
+}
+
+#workspaces button.urgent {
+    background-color: {{ gruvbox.red_dark }};
+    color: {{ gruvbox.bg_hard }};
+}
+
+#mode {
+    background-color: {{ gruvbox.yellow_dark }};
+    color: {{ gruvbox.bg_hard }};
+    padding: 0 10px;
+    font-weight: bold;
+}
+
+#clock,
+#battery,
+#cpu,
+#memory,
+#network,
+#pulseaudio,
+#tray {
+    padding: 0 10px;
+    color: {{ gruvbox.fg }};
+    background-color: {{ gruvbox.bg_soft }};
+    margin: 4px 2px;
+}
+
+#clock {
+    background-color: {{ gruvbox.blue_dark }};
+    color: {{ gruvbox.bg_hard }};
+    font-weight: bold;
+}
+
+#battery {
+    background-color: {{ gruvbox.green_dark }};
+    color: {{ gruvbox.bg_hard }};
+}
+
+#battery.charging {
+    background-color: {{ gruvbox.green }};
+    color: {{ gruvbox.bg_hard }};
+}
+
+#battery.warning:not(.charging) {
+    background-color: {{ gruvbox.yellow_dark }};
+    color: {{ gruvbox.bg_hard }};
+}
+
+#battery.critical:not(.charging) {
+    background-color: {{ gruvbox.red_dark }};
+    color: {{ gruvbox.fg }};
+    animation: blink 0.5s linear infinite alternate;
+}
+
+#cpu {
+    background-color: {{ gruvbox.aqua_dark }};
+    color: {{ gruvbox.bg_hard }};
+}
+
+#memory {
+    background-color: {{ gruvbox.orange_dark }};
+    color: {{ gruvbox.bg_hard }};
+}
+
+#network {
+    background-color: {{ gruvbox.purple_dark }};
+    color: {{ gruvbox.bg_hard }};
+}
+
+#network.disconnected {
+    background-color: {{ gruvbox.red_dark }};
+}
+
+#pulseaudio {
+    background-color: {{ gruvbox.yellow_dark }};
+    color: {{ gruvbox.bg_hard }};
+}
+
+#pulseaudio.muted {
+    background-color: {{ gruvbox.gray }};
+}
+
+#tray {
+    background-color: {{ gruvbox.bg_soft }};
+}
+
+@keyframes blink {
+    to {
+        background-color: {{ gruvbox.red }};
+    }
+}

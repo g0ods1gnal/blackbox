@@ -1,0 +1,5 @@
+---
+- name: validate sway config
+  command: sway --validate
+  become_user: "{{ main_user }}"
+  changed_when: false

@@ -1,0 +1,102 @@
+---
+- name: Install Sway packages
+  pacman:
+    name: "{{ sway_packages }}"
+    state: present
+
+- name: Create Sway config directory
+  file:
+    path: "{{ main_user_home }}/.config/sway"
+    state: directory
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0755'
+
+- name: Create Sway configuration
+  template:
+    src: sway-config.j2
+    dest: "{{ main_user_home }}/.config/sway/config"
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0644'
+  notify: validate sway config
+
+- name: Create Alacritty config directory
+  file:
+    path: "{{ main_user_home }}/.config/alacritty"
+    state: directory
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0755'
+
+- name: Create Alacritty configuration
+  template:
+    src: alacritty.toml.j2
+    dest: "{{ main_user_home }}/.config/alacritty/alacritty.toml"
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0644'
+
+- name: Create Waybar config directory
+  file:
+    path: "{{ main_user_home }}/.config/waybar"
+    state: directory
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0755'
+
+- name: Create Waybar configuration
+  template:
+    src: waybar-config.j2
+    dest: "{{ main_user_home }}/.config/waybar/config"
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0644'
+
+- name: Create Waybar style
+  template:
+    src: waybar-style.css.j2
+    dest: "{{ main_user_home }}/.config/waybar/style.css"
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0644'
+
+- name: Create Wofi config directory
+  file:
+    path: "{{ main_user_home }}/.config/wofi"
+    state: directory
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0755'
+
+- name: Create Wofi configuration
+  copy:
+    src: wofi-config
+    dest: "{{ main_user_home }}/.config/wofi/config"
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0644'
+
+- name: Create Wofi style
+  template:
+    src: wofi-style.css.j2
+    dest: "{{ main_user_home }}/.config/wofi/style.css"
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0644'
+
+- name: Create Mako config directory
+  file:
+    path: "{{ main_user_home }}/.config/mako"
+    state: directory
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0755'
+
+- name: Create Mako configuration
+  template:
+    src: mako-config.j2
+    dest: "{{ main_user_home }}/.config/mako/config"
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: '0644'
