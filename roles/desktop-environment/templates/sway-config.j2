@@ -152,14 +152,14 @@ mode "resize" {
 }
 bindsym $mod+r mode "resize"
 
-### Appearance - Minimal ###
+### Appearance ###
 gaps inner 4
 gaps outer 0
 default_border pixel 1
 default_floating_border pixel 1
 hide_edge_borders smart
 
-# Window colors - subtle
+# Window colors
 client.focused           $blue $black $white $blue $blue
 client.focused_inactive  $gray $black $lightgray $gray $gray
 client.unfocused         $black $black $gray $black $black
@@ -168,7 +168,6 @@ client.urgent            $red $black $white $red $red
 ### Autostart ###
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 exec mako
-exec waybar
 
 bar {
     swaybar_command waybar
