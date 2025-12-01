@@ -1,0 +1,73 @@
+---
+- name: Install Podman packages
+  pacman:
+    name: "{{ container_packages }}"
+    state: present
+  become: yes
+
+- name: Enable user linger
+  command: loginctl enable-linger {{ ansible_user }}
+  become: yes
+  changed_when: false
+
+- name: Enable Podman socket
+  systemd:
+    name: podman.socket
+    enabled: yes
+    state: started
+    scope: user
+  become: no
+
+- name: Create container directories
+  file:
+    path: "{{ user_home }}/containers/{{ item }}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    mode: '0755'
+  loop: "{{ container_labs }}"
+
+- name: Create lab manager script
+  copy:
+    dest: "{{ user_home }}/.local/bin/lab-manager"
+    mode: '0755'
+    owner: "{{ ansible_user }}"
+    content: |
+      #!/bin/bash
+      case "$1" in
+        kali)
+          podman run -it --rm --name kali-lab \
+            -v $HOME/security:/root/security:Z \
+            --network host kalilinux/kali-rolling
+          ;;
+        ctf)
+          podman run -it --rm --name ctf-box \
+            -v $HOME/security/ctf:/ctf:Z \
+            ubuntu:latest /bin/bash
+          ;;
+        list)
+          podman ps
+          ;;
+        clean)
+          podman container prune -f
+          ;;
+        *)
+          echo "Usage: lab-manager {kali|ctf|list|clean}"
+          ;;
+      esac
+
+- name: Pull Kali image
+  command: podman pull kalilinux/kali-rolling
+  become: no
+  register: pull_result
+  changed_when: "'Downloaded newer image' in pull_result.stdout"
+
+- name: Display result
+  debug:
+    msg: |
+      Nice! - Container environment ready
+      
+      Commands:
+      - lab-manager kali    # Start Kali Linux
+      - lab-manager ctf     # Start CTF environment
+      - lab-manager list    # List containers
+      - lab-manager clean   # Clean up

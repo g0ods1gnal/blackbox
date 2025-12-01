@@ -12,3 +12,5 @@
     - { role: desktop, tags: ['desktop'] }
     - { role: development, tags: ['development'] }
     - { role: security-tools, tags: ['security-tools'] }
+    - { role: containers, tags: ['containers'] }
+    - { role: opsec, tags: ['opsec'] }

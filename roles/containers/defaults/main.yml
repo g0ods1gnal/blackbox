@@ -1,0 +1,16 @@
+---
+container_packages:
+  - podman
+  - podman-compose
+  - podman-docker
+  - buildah
+  - skopeo
+  - crun
+  - fuse-overlayfs
+  - slirp4netns
+
+container_labs:
+  - kali
+  - ctf
+  - malware-lab
+  - web-testing
