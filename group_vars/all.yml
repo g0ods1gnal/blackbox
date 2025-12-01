@@ -1,0 +1,25 @@
+---
+# System configuration
+hostname: eris
+timezone: Europe/Lisbon
+primary_user: miguel
+user_home: /home/miguel
+
+# AUR helper
+aur_helper: paru
+
+# Network
+primary_interface: wlan0
+
+# Dark hacker color scheme
+cyber_colors:
+  bg: "#000000"           # Pure black
+  bg_light: "#0a0a0a"     # Barely lighter
+  fg: "#00ff00"           # Matrix green
+  fg_dim: "#008800"       # Dimmed green
+  accent1: "#00ff00"      # Bright green
+  accent2: "#00ff41"      # Neon green
+  accent3: "#33ff33"      # Light green
+  warning: "#ffff00"      # Yellow
+  error: "#ff0000"        # Red
+  comment: "#005500"      # Dark green
