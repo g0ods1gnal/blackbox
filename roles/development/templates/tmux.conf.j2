@@ -19,19 +19,26 @@ bind j select-pane -D
 bind k select-pane -U
 bind l select-pane -R
 
-# Colors
+# Gruvbox Hard Dark colors
 set -g default-terminal "screen-256color"
 set -ga terminal-overrides ",*256col*:Tc"
 
 # Status bar
 set -g status-position top
-set -g status-style bg='#000000',fg='#00ff00'
-set -g status-left '#[fg=#00ff00,bold]▶ '
-set -g status-right '#[fg=#00ff00]%H:%M #[fg=#008800]%Y-%m-%d'
+set -g status-style bg='#1d2021',fg='#ebdbb2'
+set -g status-left '#[fg=#8ec07c,bold]▶ '
+set -g status-right '#[fg=#83a598]%H:%M #[fg=#689d6a]%Y-%m-%d'
 
-set -g window-status-current-style fg='#00ff00',bold
-set -g pane-border-style fg='#008800'
-set -g pane-active-border-style fg='#00ff00'
+set -g window-status-current-style fg='#fabd2f',bold
+set -g pane-border-style fg='#504945'
+set -g pane-active-border-style fg='#8ec07c'
+
+# Message styling
+set -g message-style bg='#1d2021',fg='#fabd2f'
+set -g message-command-style bg='#1d2021',fg='#83a598'
+
+# Mode styling
+setw -g mode-style bg='#504945',fg='#ebdbb2'
 
 # Index from 1
 set -g base-index 1

@@ -1,44 +1,169 @@
 * {
     font-family: "JetBrainsMono Nerd Font";
     font-size: 12px;
+    min-height: 0;
 }
 
 window#waybar {
-    background-color: {{ cyber_colors.bg }};
-    border-bottom: 1px solid {{ cyber_colors.accent1 }};
+    background-color: {{ cyber_colors.bg_hard }};
+    border-bottom: 2px solid {{ cyber_colors.aqua }};
     color: {{ cyber_colors.fg }};
+}
+
+/* Workspaces */
+#workspaces {
+    margin: 0 4px;
 }
 
 #workspaces button {
-    padding: 0 6px;
-    color: {{ cyber_colors.fg_dim }};
+    padding: 0 8px;
+    color: {{ cyber_colors.fg4 }};
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+}
+
+#workspaces button:hover {
+    background-color: {{ cyber_colors.bg1 }};
+    color: {{ cyber_colors.fg }};
+    box-shadow: inset 0 -2px {{ cyber_colors.aqua }};
 }
 
 #workspaces button.focused {
-    color: {{ cyber_colors.accent1 }};
-    box-shadow: inset 0 -1px {{ cyber_colors.accent1 }};
+    background-color: {{ cyber_colors.bg2 }};
+    color: {{ cyber_colors.aqua }};
+    box-shadow: inset 0 -2px {{ cyber_colors.aqua }};
 }
 
-#custom-cyberops {
+#workspaces button.urgent {
+    background-color: {{ cyber_colors.red }};
+    color: {{ cyber_colors.bg_hard }};
+}
+
+#workspaces button.visible {
+    background-color: {{ cyber_colors.bg1 }};
     color: {{ cyber_colors.fg }};
-    padding: 0 10px;
 }
 
+/* Mode indicator */
+#mode {
+    background-color: {{ cyber_colors.orange }};
+    color: {{ cyber_colors.bg_hard }};
+    padding: 0 10px;
+    margin: 0 4px;
+    font-weight: bold;
+}
+
+/* Center text */
+#custom-cyberops {
+    color: {{ cyber_colors.yellow }};
+    padding: 0 10px;
+    font-weight: bold;
+}
+
+/* Right modules */
 #clock,
 #cpu,
 #memory,
 #battery,
 #network {
-    padding: 0 8px;
+    padding: 0 10px;
+    margin: 0 2px;
     color: {{ cyber_colors.fg }};
 }
 
-#clock { color: {{ cyber_colors.accent1 }}; }
+#clock {
+    color: {{ cyber_colors.aqua }};
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+#cpu {
+    color: {{ cyber_colors.green }};
+}
+
+#cpu.warning {
+    color: {{ cyber_colors.yellow }};
+}
+
+#cpu.critical {
+    color: {{ cyber_colors.red }};
+    animation: blink 1s ease-in-out infinite;
+}
+
+#memory {
+    color: {{ cyber_colors.blue }};
+}
+
+#memory.warning {
+    color: {{ cyber_colors.yellow }};
+}
+
+#memory.critical {
+    color: {{ cyber_colors.red }};
+    animation: blink 1s ease-in-out infinite;
+}
+
+#battery {
+    color: {{ cyber_colors.yellow }};
+}
+
+#battery.charging {
+    color: {{ cyber_colors.green }};
+}
+
+#battery.warning {
+    color: {{ cyber_colors.orange }};
+}
 
 #battery.critical {
-    color: {{ cyber_colors.error }};
+    color: {{ cyber_colors.red }};
+}
+
+#battery.critical:not(.charging) {
+    background-color: {{ cyber_colors.red }};
+    color: {{ cyber_colors.bg_hard }};
+    padding: 0 10px;
+}
+
+#network {
+    color: {{ cyber_colors.purple }};
 }
 
 #network.disconnected {
-    color: {{ cyber_colors.error }};
+    color: {{ cyber_colors.red }};
+}
+
+/* Hover effects */
+#clock:hover,
+#cpu:hover,
+#memory:hover,
+#battery:hover,
+#network:hover {
+    background-color: {{ cyber_colors.bg1 }};
+}
+
+/* Blink animation */
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Tooltips */
+tooltip {
+    background-color: {{ cyber_colors.bg_hard }};
+    border: 2px solid {{ cyber_colors.aqua }};
+    border-radius: 0;
+    color: {{ cyber_colors.fg }};
+}
+
+tooltip label {
+    color: {{ cyber_colors.fg }};
 }

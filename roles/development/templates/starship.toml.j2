@@ -1,4 +1,4 @@
-# Minimal Dark Starship Config
+# Gruvbox Hard Dark Starship Config
 
 format = """
 $username\
@@ -17,45 +17,45 @@ success_symbol = "[➜](bold green)"
 error_symbol = "[✗](bold red)"
 
 [username]
-style_user = "green"
+style_user = "bold #8ec07c"
 format = "[$user]($style)"
 show_always = true
 
 [hostname]
 ssh_only = false
-format = "[@$hostname](green) "
+format = "[@$hostname](bold #689d6a) "
 disabled = false
 
 [directory]
-style = "green"
+style = "bold #83a598"
 truncation_length = 3
 format = "[$path]($style) "
 
 [git_branch]
-symbol = ""
-style = "yellow"
+symbol = " "
+style = "#d3869b"
 format = "[$symbol$branch]($style) "
 
 [git_status]
-style = "red"
+style = "#fb4934"
 format = "[$all_status$ahead_behind]($style) "
 
 [python]
-symbol = ""
-style = "green"
+symbol = " "
+style = "#fabd2f"
 format = "[$symbol$version]($style) "
 
 [rust]
-symbol = ""
-style = "green"
+symbol = " "
+style = "#fe8019"
 format = "[$symbol$version]($style) "
 
 [golang]
-symbol = ""
-style = "green"
+symbol = " "
+style = "#8ec07c"
 format = "[$symbol$version]($style) "
 
 [nodejs]
-symbol = ""
-style = "green"
+symbol = " "
+style = "#b8bb26"
 format = "[$symbol$version]($style) "

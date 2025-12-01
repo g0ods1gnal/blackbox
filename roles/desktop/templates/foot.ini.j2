@@ -1,37 +1,50 @@
 [main]
-font=JetBrainsMono Nerd Font:size=12
+font=JetBrainsMono Nerd Font:size=11
+dpi-aware=yes
+pad=10x10
 
 [cursor]
-color={{ cyber_colors.bg }} {{ cyber_colors.accent1 }}
 style=block
 blink=no
 
 [colors]
-alpha=1.0
-background={{ cyber_colors.bg }}
-foreground={{ cyber_colors.fg }}
+alpha=0.9
+background=000000
+foreground=ebdbb2
 
-regular0={{ cyber_colors.bg }}
-regular1={{ cyber_colors.error }}
-regular2={{ cyber_colors.accent1 }}
-regular3={{ cyber_colors.warning }}
-regular4={{ cyber_colors.fg_dim }}
-regular5={{ cyber_colors.fg_dim }}
-regular6={{ cyber_colors.accent2 }}
-regular7={{ cyber_colors.fg }}
+## Cursor (fg bg)
+cursor=ebdbb2 000000
 
-bright0={{ cyber_colors.bg_light }}
-bright1={{ cyber_colors.error }}
-bright2={{ cyber_colors.accent2 }}
-bright3={{ cyber_colors.warning }}
-bright4={{ cyber_colors.fg }}
-bright5={{ cyber_colors.fg }}
-bright6={{ cyber_colors.accent3 }}
-bright7={{ cyber_colors.accent1 }}
+## Normal colors (Gruvbox Hard Dark)
+regular0=1d2021
+regular1=cc241d
+regular2=98971a
+regular3=d79921
+regular4=458588
+regular5=b16286
+regular6=689d6a
+regular7=a89984
+
+## Bright colors
+bright0=928374
+bright1=fb4934
+bright2=b8bb26
+bright3=fabd2f
+bright4=83a598
+bright5=d3869b
+bright6=8ec07c
+bright7=ebdbb2
 
 [scrollback]
 lines=10000
 
+[mouse]
+hide-when-typing=no
+
 [key-bindings]
 clipboard-copy=Control+Shift+c
 clipboard-paste=Control+Shift+v
+search-start=Control+Shift+f
+font-increase=Control+plus
+font-decrease=Control+minus
+font-reset=Control+0
