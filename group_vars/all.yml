@@ -11,6 +11,11 @@ aur_helper: paru
 # Network
 primary_interface: wlan0
 
+# Hardware
+encrypted_partition: /dev/nvme0n1p2
+mapper_name: root
+root_subvolume: "@"
+
 # Dark hacker color scheme
 cyber_colors:
   bg: "#000000"           # Pure black

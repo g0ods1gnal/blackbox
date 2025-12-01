@@ -1,0 +1,161 @@
+---
+- name: Detect encrypted partition automatically
+  shell: |
+    for part in /dev/nvme0n1p*; do
+      if cryptsetup isLuks "$part" 2>/dev/null; then
+        echo "$part"
+        exit 0
+      fi
+    done
+  register: detected_encrypted_partition
+  changed_when: false
+  become: yes
+  tags: bootloader
+
+- name: Set encrypted partition (use detected or fallback to variable)
+  set_fact:
+    encrypted_partition: "{{ detected_encrypted_partition.stdout if detected_encrypted_partition.stdout else '/dev/nvme0n1p2' }}"
+  tags: bootloader
+
+- name: Get LUKS UUID
+  shell: blkid -s UUID -o value {{ encrypted_partition }}
+  register: luks_uuid
+  changed_when: false
+  become: yes
+  tags: bootloader
+
+- name: Detect mapper name
+  shell: lsblk -nlo NAME,TYPE | awk '/crypt/ {print $1}' | head -1
+  register: detected_mapper
+  changed_when: false
+  tags: bootloader
+
+- name: Set mapper name
+  set_fact:
+    mapper_name: "{{ detected_mapper.stdout if detected_mapper.stdout else 'root' }}"
+  tags: bootloader
+
+- name: Detect root subvolume
+  shell: mount | grep 'on / ' | grep -oP 'subvol=\K[^ ,)]*' || echo "@"
+  register: detected_subvol
+  changed_when: false
+  tags: bootloader
+
+- name: Set root subvolume
+  set_fact:
+    root_subvolume: "{{ detected_subvol.stdout if detected_subvol.stdout else '@' }}"
+  tags: bootloader
+
+- name: Display detected configuration
+  debug:
+    msg: |
+      ✓ Detected configuration:
+        - Encrypted device: {{ encrypted_partition }}
+        - LUKS UUID: {{ luks_uuid.stdout }}
+        - Mapper name: {{ mapper_name }}
+        - Root subvolume: {{ root_subvolume }}
+  tags: bootloader
+
+- name: Backup current bootloader entries
+  shell: |
+    mkdir -p /boot/loader/backup
+    if ls /boot/loader/entries/*.conf 1> /dev/null 2>&1; then
+      cp /boot/loader/entries/*.conf /boot/loader/backup/backup-$(date +%Y%m%d-%H%M%S).conf
+    fi
+  become: yes
+  tags: bootloader
+
+- name: Find bootloader entry files
+  find:
+    paths: /boot/loader/entries
+    patterns: "*.conf"
+    excludes: "backup"
+  register: bootloader_files
+  become: yes
+  tags: bootloader
+
+- name: Ensure at least one bootloader entry exists
+  copy:
+    dest: /boot/loader/entries/arch.conf
+    content: |
+      title   Arch Linux
+      linux   /vmlinuz-linux
+      initrd  /intel-ucode.img
+      initrd  /initramfs-linux.img
+      options placeholder
+    owner: root
+    group: root
+    mode: '0644'
+  when: bootloader_files.matched == 0
+  become: yes
+  tags: bootloader
+
+- name: Re-find bootloader entry files
+  find:
+    paths: /boot/loader/entries
+    patterns: "*.conf"
+    excludes: "backup"
+  register: bootloader_files
+  become: yes
+  when: bootloader_files.matched == 0
+  tags: bootloader
+
+- name: Create correct bootloader entry
+  template:
+    src: bootloader-entry.j2
+    dest: "{{ item.path }}"
+    owner: root
+    group: root
+    mode: '0644'
+    backup: yes
+  loop: "{{ bootloader_files.files }}"
+  become: yes
+  tags: bootloader
+
+- name: Check current mkinitcpio hooks
+  shell: grep "^HOOKS=" /etc/mkinitcpio.conf
+  register: current_hooks
+  changed_when: false
+  tags: bootloader
+
+- name: Display current hooks
+  debug:
+    msg: "Current hooks: {{ current_hooks.stdout }}"
+  tags: bootloader
+
+- name: Verify mkinitcpio hooks include encrypt
+  lineinfile:
+    path: /etc/mkinitcpio.conf
+    regexp: '^HOOKS='
+    line: 'HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block encrypt filesystems fsck)'
+    backup: yes
+  become: yes
+  register: mkinitcpio_changed
+  tags: bootloader
+
+- name: Rebuild initramfs if changed
+  command: mkinitcpio -P
+  become: yes
+  when: mkinitcpio_changed.changed
+  tags: bootloader
+
+- name: Read final bootloader entry
+  shell: cat {{ bootloader_files.files[0].path }}
+  register: final_bootloader
+  changed_when: false
+  become: yes
+  tags: bootloader
+
+- name: Display final configuration
+  debug:
+    msg: |
+      Nice! - Bootloader configuration complete!
+      
+      {{ final_bootloader.stdout }}
+      
+      Status:
+      - LUKS UUID: {{ luks_uuid.stdout }}
+      - Mapper: /dev/mapper/{{ mapper_name }}
+      - Subvolume: {{ root_subvolume }}
+      - Initramfs: {{ 'Rebuilt' if mkinitcpio_changed.changed else 'No changes needed' }}
+  tags: bootloader
