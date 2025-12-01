@@ -1,0 +1,41 @@
+# Minimal Tmux Config
+
+# Prefix
+unbind C-b
+set -g prefix C-a
+bind C-a send-prefix
+
+# Vi mode
+setw -g mode-keys vi
+set -g mouse on
+
+# Splits
+bind | split-window -h
+bind - split-window -v
+
+# Navigation
+bind h select-pane -L
+bind j select-pane -D
+bind k select-pane -U
+bind l select-pane -R
+
+# Colors
+set -g default-terminal "screen-256color"
+set -ga terminal-overrides ",*256col*:Tc"
+
+# Status bar
+set -g status-position top
+set -g status-style bg='#000000',fg='#00ff00'
+set -g status-left '#[fg=#00ff00,bold]▶ '
+set -g status-right '#[fg=#00ff00]%H:%M #[fg=#008800]%Y-%m-%d'
+
+set -g window-status-current-style fg='#00ff00',bold
+set -g pane-border-style fg='#008800'
+set -g pane-active-border-style fg='#00ff00'
+
+# Index from 1
+set -g base-index 1
+setw -g pane-base-index 1
+
+# Reload config
+bind r source-file ~/.tmux.conf \; display "Config reloaded"

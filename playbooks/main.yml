@@ -1,8 +1,13 @@
 ---
-
 - name: Install secure arch linux environment
   hosts: localhost
 
+  vars_files:
+    - ../group_vars/all.yml
+  
   roles:
     - { role: bootloader, tags: ['bootloader'] }
     - { role: base, tags: ['base'] }
+    - { role: security, tags: ['security'] }
+    - { role: desktop, tags: ['desktop'] }
+    - { role: development, tags: ['development'] }

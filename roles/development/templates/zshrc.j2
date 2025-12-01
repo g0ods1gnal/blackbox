@@ -1,0 +1,64 @@
+# Minimal Dark Zsh Config
+
+# History
+HISTFILE=~/.zsh_history
+HISTSIZE=10000
+SAVEHIST=10000
+setopt SHARE_HISTORY
+setopt HIST_IGNORE_DUPS
+
+# Completion
+autoload -Uz compinit
+compinit
+
+# Vi mode
+bindkey -v
+export KEYTIMEOUT=1
+
+# Environment
+export EDITOR='nvim'
+export VISUAL='nvim'
+export TERMINAL='foot'
+
+# Paths
+export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
+
+# Plugins
+[ -f /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] && \
+    source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+[ -f /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ] && \
+    source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+# Aliases
+alias ls='eza --icons --group-directories-first'
+alias ll='eza -l --icons --group-directories-first'
+alias la='eza -la --icons --group-directories-first'
+alias cat='bat --theme=base16'
+alias grep='rg'
+alias find='fd'
+alias top='btop'
+alias vim='nvim'
+
+# Security aliases
+alias nmap-quick='nmap -T4 -F'
+alias myip='curl -s ifconfig.me'
+alias ports='ss -tulanp'
+
+# System
+alias update='sudo pacman -Syu'
+alias cleanup='sudo pacman -Sc && paru -Sc'
+
+# Functions
+mkcd() { mkdir -p "$1" && cd "$1"; }
+
+# Starship prompt
+eval "$(starship init zsh)"
+
+# Zoxide
+eval "$(zoxide init zsh)"
+alias cd='z'
+
+# Auto-start Sway on TTY1
+if [ -z "$WAYLAND_DISPLAY" ] && [ "$XDG_VTNR" -eq 1 ]; then
+    exec sway
+fi

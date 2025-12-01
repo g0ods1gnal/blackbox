@@ -1,0 +1,65 @@
+---
+- name: Install development packages
+  pacman:
+    name: "{{ dev_packages }}"
+    state: present
+  become: yes
+
+- name: Install shell packages
+  pacman:
+    name: "{{ shell_packages }}"
+    state: present
+  become: yes
+
+- name: Install Python security libraries
+  pip:
+    name: "{{ python_security_libs }}"
+    extra_args: --user --break-system-packages
+  become: no
+
+- name: Change shell to zsh
+  user:
+    name: "{{ ansible_user }}"
+    shell: /bin/zsh
+  become: yes
+
+- name: Deploy zshrc
+  template:
+    src: zshrc.j2
+    dest: "{{ user_home }}/.zshrc"
+    owner: "{{ ansible_user }}"
+    mode: '0644'
+
+- name: Deploy starship config
+  template:
+    src: starship.toml.j2
+    dest: "{{ user_home }}/.config/starship.toml"
+    owner: "{{ ansible_user }}"
+    mode: '0644'
+
+- name: Deploy tmux config
+  template:
+    src: tmux.conf.j2
+    dest: "{{ user_home }}/.tmux.conf"
+    owner: "{{ ansible_user }}"
+    mode: '0644'
+
+- name: Create .config directory
+  file:
+    path: "{{ user_home }}/.config"
+    state: directory
+    owner: "{{ ansible_user }}"
+    mode: '0755'
+
+- name: Display result
+  debug:
+    msg: |
+      Nice! - Development environment complete
+      
+      Installed:
+      - Python, Rust, Go, Node.js
+      - Zsh with dark theme
+      - Starship prompt
+      - Tmux
+      
+      ⚠️  Logout and login to activate zsh

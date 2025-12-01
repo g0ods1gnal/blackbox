@@ -1,0 +1,30 @@
+---
+# Development packages
+dev_packages:
+  - python
+  - python-pip
+  - python-pipenv
+  - python-poetry
+  - rust
+  - rust-analyzer
+  - cargo
+  - go
+  - gopls
+  - nodejs
+  - npm
+  - yarn
+  - github-cli
+
+# Shell packages
+shell_packages:
+  - zsh
+  - zsh-syntax-highlighting
+  - zsh-autosuggestions
+
+# Python security libraries
+python_security_libs:
+  - pwntools
+  - requests
+  - scapy
+  - beautifulsoup4
+  - paramiko

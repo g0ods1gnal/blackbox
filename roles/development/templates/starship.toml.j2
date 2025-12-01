@@ -1,0 +1,61 @@
+# Minimal Dark Starship Config
+
+format = """
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_status\
+$python\
+$rust\
+$golang\
+$nodejs\
+$character"""
+
+[character]
+success_symbol = "[➜](bold green)"
+error_symbol = "[✗](bold red)"
+
+[username]
+style_user = "green"
+format = "[$user]($style)"
+show_always = true
+
+[hostname]
+ssh_only = false
+format = "[@$hostname](green) "
+disabled = false
+
+[directory]
+style = "green"
+truncation_length = 3
+format = "[$path]($style) "
+
+[git_branch]
+symbol = ""
+style = "yellow"
+format = "[$symbol$branch]($style) "
+
+[git_status]
+style = "red"
+format = "[$all_status$ahead_behind]($style) "
+
+[python]
+symbol = ""
+style = "green"
+format = "[$symbol$version]($style) "
+
+[rust]
+symbol = ""
+style = "green"
+format = "[$symbol$version]($style) "
+
+[golang]
+symbol = ""
+style = "green"
+format = "[$symbol$version]($style) "
+
+[nodejs]
+symbol = ""
+style = "green"
+format = "[$symbol$version]($style) "
