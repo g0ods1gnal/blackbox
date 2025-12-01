@@ -1,0 +1,26 @@
+---
+desktop_packages:
+  - sway
+  - swaylock
+  - swayidle
+  - swaybg
+  - waybar
+  - mako
+  - foot
+  - fuzzel
+  - wl-clipboard
+  - grim
+  - slurp
+  - brightnessctl
+  - pamixer
+
+audio_packages:
+  - pipewire
+  - pipewire-pulse
+  - wireplumber
+
+font_packages:
+  - ttf-jetbrains-mono-nerd
+  - ttf-fira-code
+  - noto-fonts
+  - noto-fonts-emoji

@@ -1,0 +1,44 @@
+* {
+    font-family: "JetBrainsMono Nerd Font";
+    font-size: 12px;
+}
+
+window#waybar {
+    background-color: {{ cyber_colors.bg }};
+    border-bottom: 1px solid {{ cyber_colors.accent1 }};
+    color: {{ cyber_colors.fg }};
+}
+
+#workspaces button {
+    padding: 0 6px;
+    color: {{ cyber_colors.fg_dim }};
+}
+
+#workspaces button.focused {
+    color: {{ cyber_colors.accent1 }};
+    box-shadow: inset 0 -1px {{ cyber_colors.accent1 }};
+}
+
+#custom-cyberops {
+    color: {{ cyber_colors.fg }};
+    padding: 0 10px;
+}
+
+#clock,
+#cpu,
+#memory,
+#battery,
+#network {
+    padding: 0 8px;
+    color: {{ cyber_colors.fg }};
+}
+
+#clock { color: {{ cyber_colors.accent1 }}; }
+
+#battery.critical {
+    color: {{ cyber_colors.error }};
+}
+
+#network.disconnected {
+    color: {{ cyber_colors.error }};
+}

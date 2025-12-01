@@ -1,0 +1,121 @@
+# Minimal Dark Sway Config
+set $mod Mod4
+set $term foot
+set $menu fuzzel
+
+# Colors
+set $bg     {{ cyber_colors.bg }}
+set $fg     {{ cyber_colors.fg }}
+set $accent {{ cyber_colors.accent1 }}
+
+### Output
+output * bg $bg solid_color
+
+### Input
+input type:keyboard {
+    xkb_layout us
+    xkb_options caps:escape
+}
+
+input type:touchpad {
+    dwt enabled
+    tap enabled
+    natural_scroll enabled
+}
+
+### Idle
+exec swayidle -w \
+    timeout 300 'swaylock -f -c 000000' \
+    timeout 600 'swaymsg "output * dpms off"' \
+    resume 'swaymsg "output * dpms on"' \
+    before-sleep 'swaylock -f -c 000000'
+
+### Keybindings
+bindsym $mod+Return exec $term
+bindsym $mod+d exec $menu
+bindsym $mod+Shift+q kill
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit?' -B 'Yes' 'swaymsg exit'
+
+# Movement
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+# Workspaces
+bindsym $mod+1 workspace 1
+bindsym $mod+2 workspace 2
+bindsym $mod+3 workspace 3
+bindsym $mod+4 workspace 4
+bindsym $mod+5 workspace 5
+
+bindsym $mod+Shift+1 move container to workspace 1
+bindsym $mod+Shift+2 move container to workspace 2
+bindsym $mod+Shift+3 move container to workspace 3
+bindsym $mod+Shift+4 move container to workspace 4
+bindsym $mod+Shift+5 move container to workspace 5
+
+# Layout
+bindsym $mod+b splith
+bindsym $mod+v splitv
+bindsym $mod+f fullscreen
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+bindsym $mod+Shift+space floating toggle
+bindsym $mod+space focus mode_toggle
+
+# Scratchpad
+bindsym $mod+Shift+minus move scratchpad
+bindsym $mod+minus scratchpad show
+
+# Resize mode
+mode "resize" {
+    bindsym h resize shrink width 10px
+    bindsym j resize grow height 10px
+    bindsym k resize shrink height 10px
+    bindsym l resize grow width 10px
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+r mode "resize"
+
+# Screenshots
+bindsym Print exec grim -g "$(slurp)" {{ user_home }}/Pictures/$(date +%Y%m%d-%H%M%S).png
+bindsym Shift+Print exec grim {{ user_home }}/Pictures/$(date +%Y%m%d-%H%M%S).png
+
+# Lock
+bindsym $mod+Escape exec swaylock -f -c 000000
+
+# Media keys
+bindsym XF86AudioRaiseVolume exec pamixer -i 5
+bindsym XF86AudioLowerVolume exec pamixer -d 5
+bindsym XF86AudioMute exec pamixer -t
+bindsym XF86MonBrightnessUp exec brightnessctl set +5%
+bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
+
+### Styling
+default_border pixel 1
+default_floating_border pixel 1
+gaps inner 4
+gaps outer 2
+
+client.focused          $accent $bg $fg $accent $accent
+client.focused_inactive #008800 $bg $fg #008800 #008800
+client.unfocused        $bg $bg #008800 $bg $bg
+client.urgent           #ff0000 #ff0000 $bg #ff0000 #ff0000
+
+### Bar
+bar {
+    swaybar_command waybar
+}
+
+### Auto-start
+exec mako
+exec nm-applet --indicator
