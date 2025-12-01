@@ -1,0 +1,68 @@
+---
+- name: Install OPSEC packages
+  pacman:
+    name: "{{ opsec_packages }}"
+    state: present
+  become: yes
+
+- name: Configure MAC randomization
+  copy:
+    dest: /etc/NetworkManager/conf.d/wifi-random-mac.conf
+    content: |
+      [device-wifi]
+      wifi.scan-rand-mac-address=yes
+      
+      [connection-wifi]
+      wifi.cloned-mac-address=random
+      ethernet.cloned-mac-address=random
+    mode: '0644'
+  become: yes
+
+- name: Configure proxychains
+  copy:
+    dest: /etc/proxychains.conf
+    content: |
+      strict_chain
+      proxy_dns
+      
+      [ProxyList]
+      socks5 127.0.0.1 9050
+    mode: '0644'
+  become: yes
+
+- name: Create net-mode script
+  copy:
+    dest: "{{ user_home }}/.local/bin/net-mode"
+    mode: '0755'
+    owner: "{{ ansible_user }}"
+    content: |
+      #!/bin/bash
+      case "$1" in
+        tor)
+          sudo systemctl start tor
+          export http_proxy=socks5://127.0.0.1:9050
+          export https_proxy=socks5://127.0.0.1:9050
+          echo "[TOR MODE]"
+          ;;
+        clear)
+          sudo systemctl stop tor 2>/dev/null
+          unset http_proxy https_proxy
+          echo "[CLEAR MODE]"
+          ;;
+        status)
+          echo "IP: $(curl -s ifconfig.me)"
+          ;;
+        *)
+          echo "Usage: net-mode {tor|clear|status}"
+          ;;
+      esac
+
+- name: Display result
+  debug:
+    msg: |
+      Very Nice! - OPSEC tools ready
+      
+      Commands:
+      - net-mode tor      # Route through Tor
+      - net-mode clear    # Normal mode
+      - net-mode status   # Check IP

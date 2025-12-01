@@ -61,14 +61,6 @@
     state: present
   become: yes
 
-- name: Install AUR security tools
-  command: paru -S --noconfirm --needed {{ item }}
-  loop: "{{ security_tools_aur }}"
-  become: no
-  register: paru_result
-  changed_when: "'nothing to do' not in paru_result.stdout"
-  failed_when: paru_result.rc != 0 and 'already installed' not in paru_result.stderr
-
 - name: Install Python security packages
   pip:
     name: "{{ python_security_packages }}"
@@ -110,7 +102,6 @@
       Installed:
       - {{ security_tools_pacman | length }} tools from official repos
       - {{ security_tools_blackarch | length }} tools from BlackArch
-      - {{ security_tools_aur | length }} tools from AUR
       
       Directory: ~/security/ created
       

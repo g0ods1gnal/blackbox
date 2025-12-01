@@ -1,0 +1,10 @@
+---
+opsec_packages:
+  - macchanger
+  - tor
+  - torsocks
+  - openvpn
+  - wireguard-tools
+  - proxychains-ng
+
+primary_interface: wlan0

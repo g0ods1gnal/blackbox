@@ -1,0 +1,14 @@
+---
+# NVIDIA packages
+nvidia_packages:
+  - nvidia-dkms
+  - nvidia-utils
+  - nvidia-settings
+  - egl-wayland
+
+# Kernel modules
+nvidia_modules:
+  - nvidia
+  - nvidia_modeset
+  - nvidia_uvm
+  - nvidia_drm

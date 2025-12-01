@@ -20,6 +20,9 @@ security_tools_blackarch:
   - john
   - hashcat
   - aircrack-ng
+  - burpsuite
+  - gobuster
+  - ffuf
   - nikto
   - masscan
   - foremost
@@ -35,12 +38,6 @@ security_tools_blackarch:
   - bloodhound
   - responder
   - exploitdb
-
-# Security tools from AUR
-security_tools_aur:
-  - burpsuite
-  - gobuster
-  - ffuf
 
 # Python security packages
 python_security_packages:

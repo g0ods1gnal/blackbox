@@ -1,5 +1,14 @@
 # Minimal Dark Zsh Config
 
+if [ -z "$XDG_RUNTIME_DIR" ]; then
+	export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+fi
+
+if [ ! -d "$XDG_RUNTIME_DIR" ]; then
+	mkdir -p "$XDG_RUNTIME_DIR"
+	chmod 700 "$XDG_RUNTIME_DIR"
+fi
+
 # History
 HISTFILE=~/.zsh_history
 HISTSIZE=10000

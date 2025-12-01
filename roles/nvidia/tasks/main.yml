@@ -1,0 +1,117 @@
+---
+- name: Check for NVIDIA GPU
+  shell: lspci | grep -i nvidia
+  register: nvidia_check
+  changed_when: false
+  failed_when: false
+
+- name: Display GPU detection
+  debug:
+    msg: "{{ 'NVIDIA GPU detected: ' + nvidia_check.stdout if nvidia_check.rc == 0 else 'No NVIDIA GPU detected' }}"
+
+- name: Install NVIDIA DKMS packages
+  pacman:
+    name: "{{ nvidia_packages }}"
+    state: present
+  become: yes
+  when: nvidia_check.rc == 0
+
+- name: Remove nouveau from initramfs
+  lineinfile:
+    path: /etc/mkinitcpio.conf
+    regexp: '^MODULES='
+    line: 'MODULES=({{ nvidia_modules | join(" ") }})'
+    backup: yes
+  become: yes
+  when: nvidia_check.rc == 0
+  register: mkinitcpio_changed
+
+- name: Create modprobe configuration for NVIDIA
+  copy:
+    dest: /etc/modprobe.d/nvidia.conf
+    content: |
+      options nvidia-drm modeset=1
+      options nvidia NVreg_PreserveVideoMemoryAllocations=1
+    owner: root
+    mode: '0644'
+  become: yes
+  when: nvidia_check.rc == 0
+
+- name: Blacklist nouveau driver
+  copy:
+    dest: /etc/modprobe.d/blacklist-nouveau.conf
+    content: |
+      blacklist nouveau
+      options nouveau modeset=0
+    owner: root
+    mode: '0644'
+  become: yes
+  when: nvidia_check.rc == 0
+
+- name: Add NVIDIA kernel parameters to bootloader
+  lineinfile:
+    path: /boot/loader/entries/arch.conf
+    regexp: '^options'
+    backrefs: yes
+    line: '\g<0> nvidia-drm.modeset=1'
+  become: yes
+  when: nvidia_check.rc == 0
+  register: bootloader_nvidia
+
+- name: Rebuild initramfs
+  command: mkinitcpio -P
+  become: yes
+  when: 
+    - nvidia_check.rc == 0
+    - mkinitcpio_changed.changed
+
+- name: Enable NVIDIA services
+  systemd:
+    name: "{{ item }}"
+    enabled: yes
+  loop:
+    - nvidia-suspend
+    - nvidia-hibernate
+    - nvidia-resume
+  become: yes
+  when: nvidia_check.rc == 0
+  failed_when: false
+
+- name: Create NVIDIA Xorg config
+  copy:
+    dest: /etc/X11/xorg.conf.d/20-nvidia.conf
+    content: |
+      Section "Device"
+          Identifier "NVIDIA Card"
+          Driver "nvidia"
+          VendorName "NVIDIA Corporation"
+          Option "NoLogo" "true"
+          Option "RegistryDwords" "EnableBrightnessControl=1"
+      EndSection
+    owner: root
+    mode: '0644'
+  become: yes
+  when: nvidia_check.rc == 0
+
+- name: Display result
+  debug:
+    msg: |
+      Nice! - NVIDIA DKMS configured
+      
+      Installed:
+      - nvidia-dkms (kernel module)
+      - nvidia-utils
+      - nvidia-settings
+      
+      Configuration:
+      - DRM kernel mode setting enabled
+      - Nouveau blacklisted
+      - Suspend/hibernate support enabled
+      
+      {{ '⚠️  REBOOT REQUIRED for NVIDIA drivers' if mkinitcpio_changed.changed or bootloader_nvidia.changed else 'No reboot needed' }}
+  when: nvidia_check.rc == 0
+
+- name: Skip message
+  debug:
+    msg: "⏭️  No NVIDIA GPU detected, skipping NVIDIA setup"
+  when: nvidia_check.rc != 0

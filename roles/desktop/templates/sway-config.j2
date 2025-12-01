@@ -3,6 +3,12 @@ set $mod Mod1
 set $term foot
 set $menu fuzzel
 
+# Variables
+exec systemctl --user import-environment WLR_NO_HARDWARE_CURSORS WLR_RENDERER
+
+### Include monitor configuration
+include ~/.config/sway/config.d/monitors
+
 # Colors
 set $bg     {{ cyber_colors.bg }}
 set $fg     {{ cyber_colors.fg }}
@@ -36,6 +42,9 @@ bindsym $mod+d exec $menu
 bindsym $mod+Shift+q kill
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit?' -B 'Yes' 'swaymsg exit'
+
+# Monitor management
+bindsym $mod+p exec ~/.local/bin/monitor-manager
 
 # Movement
 bindsym $mod+h focus left

@@ -84,6 +84,98 @@
     - wireplumber
   become: no
 
+- name: Create monitors configuration directory
+  file:
+    path: "{{ user_home }}/.config/sway/monitors"
+    state: directory
+    owner: "{{ ansible_user }}"
+    mode: '0755'
+
+- name: Deploy monitor detection script
+  copy:
+    dest: "{{ user_home }}/.config/sway/monitors/detect.sh"
+    mode: '0755'
+    owner: "{{ ansible_user }}"
+    content: |
+      #!/bin/bash
+      # Auto-detect and configure monitors
+      
+      # Get connected outputs
+      OUTPUTS=$(swaymsg -t get_outputs -r | jq -r '.[].name')
+      
+      # Configure each output
+      for output in $OUTPUTS; do
+        # Get resolution
+        RESOLUTION=$(swaymsg -t get_outputs -r | jq -r ".[] | select(.name==\"$output\") | \"\(.current_mode.width)x\(.current_mode.height)@\(.current_mode.refresh/1000)Hz\"")
+        echo "Detected: $output at $RESOLUTION"
+      done
+
+- name: Create sway config.d directory
+  file:
+    path: "{{ user_home }}/.config/sway/config.d"
+    state: directory
+    owner: "{{ ansible_user }}"
+    mode: '0755'
+
+- name: Deploy multi-monitor Sway config
+  template:
+    src: sway-monitors.j2
+    dest: "{{ user_home }}/.config/sway/config.d/monitors"
+    owner: "{{ ansible_user }}"
+    mode: '0644'
+
+- name: Deploy monitor manager script
+  copy:
+    dest: "{{ user_home }}/.local/bin/monitor-manager"
+    mode: '0755'
+    owner: "{{ ansible_user }}"
+    content: |
+      #!/bin/bash
+      # Monitor Manager for Sway
+      
+      CHOICE=$(echo -e "Detect\nLaptop Only\nExternal Only\nDual (Side)\nDual (Stack)\nMirror" | fuzzel --dmenu)
+      
+      case "$CHOICE" in
+        "Detect")
+          # Auto-detect and list monitors
+          swaymsg -t get_outputs | jq -r '.[] | "\(.name): \(.make) \(.model) - \(.current_mode.width)x\(.current_mode.height)@\(.current_mode.refresh/1000)Hz"'
+          notify-send "Monitors" "Check terminal for output list"
+          ;;
+        
+        "Laptop Only")
+          swaymsg output eDP-1 enable
+          swaymsg output HDMI-A-1 disable 2>/dev/null || true
+          swaymsg output DP-1 disable 2>/dev/null || true
+          notify-send "Monitor" "Laptop screen only"
+          ;;
+        
+        "External Only")
+          swaymsg output eDP-1 disable
+          swaymsg output HDMI-A-1 enable 2>/dev/null || swaymsg output DP-1 enable 2>/dev/null
+          notify-send "Monitor" "External screen only"
+          ;;
+        
+        "Dual (Side)")
+          swaymsg output eDP-1 enable position 0,0
+          swaymsg output HDMI-A-1 enable position 1920,0 2>/dev/null || \
+            swaymsg output DP-1 enable position 1920,0 2>/dev/null
+          notify-send "Monitor" "Dual monitors (side by side)"
+          ;;
+        
+        "Dual (Stack)")
+          swaymsg output HDMI-A-1 enable position 0,0 2>/dev/null || \
+            swaymsg output DP-1 enable position 0,0 2>/dev/null
+          swaymsg output eDP-1 enable position 0,1080
+          notify-send "Monitor" "Dual monitors (stacked)"
+          ;;
+        
+        "Mirror")
+          swaymsg output eDP-1 enable
+          swaymsg output HDMI-A-1 enable 2>/dev/null || swaymsg output DP-1 enable 2>/dev/null
+          notify-send "Monitor" "Mirrored displays"
+          ;;
+      esac
+
 - name: Display result
   debug:
     msg: |

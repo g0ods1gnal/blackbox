@@ -2,4 +2,4 @@ title   Arch Linux
 linux   /vmlinuz-linux
 initrd  /intel-ucode.img
 initrd  /initramfs-linux.img
-options cryptdevice=UUID={{ luks_uuid.stdout }}:root root=/dev/mapper/root rootflags=subvol=@ rw quiet loglevel=3
+options cryptdevice=UUID={{ luks_uuid.stdout }}:root root=/dev/mapper/root rootflags=subvol=@ rw quiet loglevel=3 nvidia-drm.modeset=1 module_blacklist=nouveau

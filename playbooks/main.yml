@@ -14,3 +14,4 @@
     - { role: security-tools, tags: ['security-tools'] }
     - { role: containers, tags: ['containers'] }
     - { role: opsec, tags: ['opsec'] }
+    - { role: nvidia, tags: ['nvidia'] }
