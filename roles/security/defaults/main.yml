@@ -1,0 +1,14 @@
+---
+security_packages:
+  - ufw
+  - apparmor
+  - audit
+
+kernel_hardening:
+  - { key: "kernel.dmesg_restrict", value: "1" }
+  - { key: "kernel.kptr_restrict", value: "2" }
+  - { key: "kernel.unprivileged_bpf_disabled", value: "1" }
+  - { key: "net.ipv4.conf.all.accept_redirects", value: "0" }
+  - { key: "net.ipv4.conf.default.accept_redirects", value: "0" }
+  - { key: "net.ipv4.tcp_syncookies", value: "1" }
+  - { key: "net.ipv6.conf.all.accept_redirects", value: "0" }

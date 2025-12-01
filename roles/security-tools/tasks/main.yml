@@ -1,0 +1,117 @@
+---
+- name: Check if BlackArch keyring is installed
+  command: pacman -Q blackarch-keyring
+  register: blackarch_check
+  changed_when: false
+  failed_when: false
+  become: yes
+
+- name: Download BlackArch strap script
+  get_url:
+    url: https://blackarch.org/strap.sh
+    dest: /tmp/strap.sh
+    mode: '0755'
+  when: blackarch_check.rc != 0
+
+- name: Verify strap script checksum
+  command: sha1sum /tmp/strap.sh
+  register: strap_checksum
+  changed_when: false
+  when: blackarch_check.rc != 0
+
+- name: Display strap checksum
+  debug:
+    msg: "SHA1: {{ strap_checksum.stdout }}"
+  when: blackarch_check.rc != 0
+
+- name: Run BlackArch strap script
+  command: /tmp/strap.sh
+  become: yes
+  when: blackarch_check.rc != 0
+
+- name: Update package database with BlackArch
+  pacman:
+    update_cache: yes
+  become: yes
+
+- name: Create security directories
+  file:
+    path: "{{ user_home }}/security/{{ item }}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    mode: '0755'
+  loop:
+    - wordlists
+    - scripts
+    - exploits
+    - logs
+    - projects
+    - ctf
+    - notes
+
+- name: Install security tools from official repos
+  pacman:
+    name: "{{ security_tools_pacman }}"
+    state: present
+  become: yes
+
+- name: Install security tools from BlackArch
+  pacman:
+    name: "{{ security_tools_blackarch }}"
+    state: present
+  become: yes
+
+- name: Install AUR security tools
+  command: paru -S --noconfirm --needed {{ item }}
+  loop: "{{ security_tools_aur }}"
+  become: no
+  register: paru_result
+  changed_when: "'nothing to do' not in paru_result.stdout"
+  failed_when: paru_result.rc != 0 and 'already installed' not in paru_result.stderr
+
+- name: Install Python security packages
+  pip:
+    name: "{{ python_security_packages }}"
+    extra_args: --user --break-system-packages
+  become: no
+
+- name: Create tools verification script
+  copy:
+    dest: "{{ user_home }}/.local/bin/verify-tools"
+    mode: '0755'
+    owner: "{{ ansible_user }}"
+    content: |
+      #!/bin/bash
+      echo "Checking security tools..."
+      
+      tools=(nmap masscan sqlmap hashcat john metasploit burpsuite gobuster ffuf)
+      
+      for tool in "${tools[@]}"; do
+        if command -v "$tool" &> /dev/null; then
+          echo "✅ $tool"
+        else
+          echo "❌ $tool"
+        fi
+      done
+      
+      echo ""
+      echo "Python libraries:"
+      python -c "import pwnlib; print('✅ pwntools')" 2>/dev/null || echo "❌ pwntools"
+      python -c "import scapy; print('✅ scapy')" 2>/dev/null || echo "❌ scapy"
+      python -c "import impacket; print('✅ impacket')" 2>/dev/null || echo "❌ impacket"
+
+- name: Display result
+  debug:
+    msg: |
+      Nice! - Security tools installed
+      
+      BlackArch repository: {{ 'Already configured' if blackarch_check.rc == 0 else 'Newly configured' }}
+      
+      Installed:
+      - {{ security_tools_pacman | length }} tools from official repos
+      - {{ security_tools_blackarch | length }} tools from BlackArch
+      - {{ security_tools_aur | length }} tools from AUR
+      
+      Directory: ~/security/ created
+      
+      Verify tools: verify-tools

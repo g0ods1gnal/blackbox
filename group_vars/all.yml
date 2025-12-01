@@ -18,13 +18,13 @@ root_subvolume: "@"
 
 # Dark hacker color scheme
 cyber_colors:
-  bg: "#000000"           # Pure black
-  bg_light: "#0a0a0a"     # Barely lighter
-  fg: "#00ff00"           # Matrix green
-  fg_dim: "#008800"       # Dimmed green
-  accent1: "#00ff00"      # Bright green
-  accent2: "#00ff41"      # Neon green
-  accent3: "#33ff33"      # Light green
-  warning: "#ffff00"      # Yellow
-  error: "#ff0000"        # Red
-  comment: "#005500"      # Dark green
+  bg: "#000000"
+  bg_light: "#0a0a0a"
+  fg: "#00ff00"
+  fg_dim: "#008800"
+  accent1: "#00ff00"
+  accent2: "#00ff41"
+  accent3: "#33ff33"
+  warning: "#ffff00"
+  error: "#ff0000"
+  comment: "#005500"

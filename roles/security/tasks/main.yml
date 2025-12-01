@@ -1,0 +1,57 @@
+---
+- name: Install security packages
+  pacman:
+    name: "{{ security_packages }}"
+    state: present
+  become: yes
+
+- name: Configure kernel hardening
+  sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+    sysctl_file: /etc/sysctl.d/99-security.conf
+    reload: yes
+  loop: "{{ kernel_hardening }}"
+  become: yes
+
+- name: Enable UFW
+  systemd:
+    name: ufw
+    enabled: yes
+    state: started
+  become: yes
+
+- name: Set UFW defaults
+  command: "{{ item }}"
+  loop:
+    - ufw --force default deny incoming
+    - ufw --force default allow outgoing
+    - ufw --force enable
+  become: yes
+
+- name: Enable AppArmor
+  systemd:
+    name: apparmor
+    enabled: yes
+    state: started
+  become: yes
+
+- name: Enable auditd
+  systemd:
+    name: auditd
+    enabled: yes
+    state: started
+  become: yes
+
+- name: Display result
+  debug:
+    msg: |
+      Nice! - Security hardening complete
+      
+      - Firewall: Active
+      - AppArmor: Enabled
+      - Audit: Running
+      - Kernel: {{ kernel_hardening | length }} parameters hardened
+      
+      ⚠️  Reboot recommended

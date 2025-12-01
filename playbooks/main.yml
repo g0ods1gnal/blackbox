@@ -11,3 +11,4 @@
     - { role: security, tags: ['security'] }
     - { role: desktop, tags: ['desktop'] }
     - { role: development, tags: ['development'] }
+    - { role: security-tools, tags: ['security-tools'] }

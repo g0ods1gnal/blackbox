@@ -1,0 +1,54 @@
+---
+# Security tools from official Arch repos
+security_tools_pacman:
+  - nmap
+  - wireshark-cli
+  - tcpdump
+  - openvpn
+  - wireguard-tools
+  - proxychains-ng
+  - tor
+  - gdb
+  - strace
+  - ltrace
+  - python-pip
+
+# Security tools from BlackArch
+security_tools_blackarch:
+  - metasploit
+  - sqlmap
+  - john
+  - hashcat
+  - aircrack-ng
+  - nikto
+  - masscan
+  - foremost
+  - binwalk
+  - radare2
+  - macchanger
+  - hydra
+  - dirb
+  - wpscan
+  - enum4linux
+  - smbmap
+  - crackmapexec
+  - bloodhound
+  - responder
+  - exploitdb
+
+# Security tools from AUR
+security_tools_aur:
+  - burpsuite
+  - gobuster
+  - ffuf
+
+# Python security packages
+python_security_packages:
+  - pwntools
+  - requests
+  - scapy
+  - impacket
+  - beautifulsoup4
+  - paramiko
+  - cryptography
+  - pycryptodome
