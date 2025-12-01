@@ -1,0 +1,38 @@
+---
+- name: Verify paru is installed
+  command: which paru
+  register: paru_check
+  changed_when: false
+  failed_when: paru_check.rc != 0
+
+- name: Update pacman cache
+  pacman:
+    update_cache: yes
+  become: yes
+
+- name: Install base packages
+  pacman:
+    name: "{{ base_packages }}"
+    state: present
+  become: yes
+
+- name: Create user bin directory
+  file:
+    path: "{{ user_home }}/.local/bin"
+    state: directory
+    owner: "{{ ansible_user }}"
+    mode: '0755'
+
+- name: Add bin to PATH in bashrc
+  lineinfile:
+    path: "{{ user_home }}/.bashrc"
+    line: 'export PATH="$HOME/.local/bin:$PATH"'
+    create: yes
+
+- name: Display completion
+  debug:
+    msg: |
+      Nice! - Base system complete
+      
+      Installed {{ base_packages | length }} packages
+      Directory: ~/.local/bin created

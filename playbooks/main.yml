@@ -1,0 +1,8 @@
+---
+
+- name: Install secure arch linux environment
+  hosts: localhost
+
+  roles:
+    - { role: bootloader, tags: ['bootloader'] }
+    - { role: base, tags: ['base'] }

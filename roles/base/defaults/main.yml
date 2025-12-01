@@ -1,0 +1,26 @@
+---
+base_packages:
+  - base-devel
+  - git
+  - neovim
+  - btop
+  - htop
+  - ripgrep
+  - fd
+  - bat
+  - eza
+  - fzf
+  - zoxide
+  - starship
+  - tmux
+  - man-db
+  - man-pages
+  - curl
+  - wget
+  - unzip
+  - p7zip
+  - rsync
+  - tree
+  - which
+  - lsof
+  - jq
