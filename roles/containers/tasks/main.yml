@@ -56,7 +56,7 @@
       esac
 
 - name: Pull Kali image
-  command: podman pull kalilinux/kali-rolling
+  command: podman pull kali-rolling
   become: no
   register: pull_result
   changed_when: "'Downloaded newer image' in pull_result.stdout"
